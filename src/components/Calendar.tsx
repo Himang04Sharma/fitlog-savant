@@ -21,22 +21,22 @@ const Calendar = () => {
   };
 
   return (
-    <>
-      <Card className="p-6 animate-fadeIn">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading text-2xl font-semibold text-primary">February 2024</h2>
+    <div className="w-full">
+      <Card className="p-8 animate-fadeIn">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-heading text-3xl font-semibold text-primary">February 2024</h2>
           <Button variant="outline" size="icon">
-            <CalendarIcon className="h-4 w-4" />
+            <CalendarIcon className="h-5 w-5" />
           </Button>
         </div>
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-4 mb-6">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div key={day} className="text-center text-sm font-medium text-muted-foreground">
               {day}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-4">
           {days.map((day) => {
             const isWorkout = hasWorkout(day);
             const isDiet = hasDiet(day);
@@ -46,7 +46,7 @@ const Calendar = () => {
                 key={day}
                 variant="ghost"
                 onClick={() => handleDateClick(day)}
-                className={`h-12 ${
+                className={`h-16 ${
                   isWorkout && isDiet
                     ? 'bg-gradient-to-br from-success/20 to-secondary/20 hover:from-success/30 hover:to-secondary/30'
                     : isWorkout
@@ -61,26 +61,24 @@ const Calendar = () => {
             );
           })}
         </div>
-        <div className="flex gap-4 mt-6 justify-center">
+        <div className="flex gap-6 mt-8 justify-center">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-success/60" />
+            <div className="w-4 h-4 rounded-full bg-success/60" />
             <span className="text-sm text-muted-foreground">Workout</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-secondary/60" />
+            <div className="w-4 h-4 rounded-full bg-secondary/60" />
             <span className="text-sm text-muted-foreground">Diet</span>
           </div>
         </div>
       </Card>
 
-      {selectedDate && (
-        <DailyLogDialog
-          date={selectedDate}
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-        />
-      )}
-    </>
+      <DailyLogDialog
+        date={selectedDate}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
+    </div>
   );
 };
 
