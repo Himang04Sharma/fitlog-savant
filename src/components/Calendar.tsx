@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import DailyLogDialog from './DailyLogDialog';
 
 const Calendar = () => {
-  const [currentYear, setCurrentYear] = useState(2024);
+  const [currentYear] = useState(2025);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   
@@ -86,24 +86,6 @@ const Calendar = () => {
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-3xl font-semibold text-primary">Calendar View</h2>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setCurrentYear(2024)}
-            className={currentYear === 2024 ? 'bg-primary text-primary-foreground' : ''}
-          >
-            2024
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setCurrentYear(2025)}
-            className={currentYear === 2025 ? 'bg-primary text-primary-foreground' : ''}
-          >
-            2025
-          </Button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
