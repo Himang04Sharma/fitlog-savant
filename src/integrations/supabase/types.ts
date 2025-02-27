@@ -9,36 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      diet_log: {
-        Row: {
-          calories: number | null
-          created_at: string | null
-          id: string
-          meal_name: string
-          notes: string | null
-          protein: number | null
-          user_id: string | null
-        }
-        Insert: {
-          calories?: number | null
-          created_at?: string | null
-          id?: string
-          meal_name: string
-          notes?: string | null
-          protein?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          calories?: number | null
-          created_at?: string | null
-          id?: string
-          meal_name?: string
-          notes?: string | null
-          protein?: number | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       diet_logs: {
         Row: {
           created_at: string | null
@@ -81,36 +51,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           username?: string | null
-        }
-        Relationships: []
-      }
-      Workout_log: {
-        Row: {
-          created_at: string
-          exercise_name: string
-          id: string
-          notes: string | null
-          reps: number
-          sets: number
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          exercise_name: string
-          id?: string
-          notes?: string | null
-          reps: number
-          sets: number
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          exercise_name?: string
-          id?: string
-          notes?: string | null
-          reps?: number
-          sets?: number
-          user_id?: string | null
         }
         Relationships: []
       }
