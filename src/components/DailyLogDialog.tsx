@@ -81,12 +81,13 @@ const safeJsonToMeals = (data: Json | null): Meal[] => {
   if (Array.isArray(data)) {
     return data.map(item => {
       if (typeof item === 'object' && item !== null) {
+        const itemObj = item as Record<string, any>;
         return {
-          id: String(item.id || ''),
-          name: String(item.name || ''),
-          calories: String(item.calories || ''),
-          protein: String(item.protein || ''),
-          notes: String(item.notes || '')
+          id: String(itemObj.id || ''),
+          name: String(itemObj.name || ''),
+          calories: String(itemObj.calories || ''),
+          protein: String(itemObj.protein || ''),
+          notes: String(itemObj.notes || '')
         };
       }
       return {
