@@ -53,52 +53,65 @@ const getDailyLog = (date: string): DailyLog => {
 // Helper functions to safely convert Supabase JSON to our types
 const safeJsonToExercises = (data: Json | null): Exercise[] => {
   if (!data) return [];
-  if (Array.isArray(data)) {
-    return data.map(item => {
-      if (typeof item === 'object' && item !== null) {
+  
+  try {
+    if (Array.isArray(data)) {
+      return data.map(item => {
+        if (typeof item === 'object' && item !== null) {
+          const itemObj = item as Record<string, any>;
+          return {
+            id: String(itemObj.id || ''),
+            name: String(itemObj.name || ''),
+            sets: String(itemObj.sets || ''),
+            reps: String(itemObj.reps || ''),
+            notes: String(itemObj.notes || '')
+          };
+        }
         return {
-          id: String(item.id || ''),
-          name: String(item.name || ''),
-          sets: String(item.sets || ''),
-          reps: String(item.reps || ''),
-          notes: String(item.notes || '')
+          id: '',
+          name: '',
+          sets: '',
+          reps: '',
+          notes: ''
         };
-      }
-      return {
-        id: '',
-        name: '',
-        sets: '',
-        reps: '',
-        notes: ''
-      };
-    });
+      });
+    }
+  } catch (error) {
+    console.error('Error converting JSON to exercises:', error);
   }
+  
   return [];
 };
 
 const safeJsonToMeals = (data: Json | null): Meal[] => {
   if (!data) return [];
-  if (Array.isArray(data)) {
-    return data.map(item => {
-      if (typeof item === 'object' && item !== null) {
-        const itemObj = item as Record<string, any>;
+  
+  try {
+    if (Array.isArray(data)) {
+      return data.map(item => {
+        if (typeof item === 'object' && item !== null) {
+          const itemObj = item as Record<string, any>;
+          return {
+            id: String(itemObj.id || ''),
+            name: String(itemObj.name || ''),
+            calories: String(itemObj.calories || ''),
+            protein: String(itemObj.protein || ''),
+            notes: String(itemObj.notes || '')
+          };
+        }
         return {
-          id: String(itemObj.id || ''),
-          name: String(itemObj.name || ''),
-          calories: String(itemObj.calories || ''),
-          protein: String(itemObj.protein || ''),
-          notes: String(itemObj.notes || '')
+          id: '',
+          name: '',
+          calories: '',
+          protein: '',
+          notes: ''
         };
-      }
-      return {
-        id: '',
-        name: '',
-        calories: '',
-        protein: '',
-        notes: ''
-      };
-    });
+      });
+    }
+  } catch (error) {
+    console.error('Error converting JSON to meals:', error);
   }
+  
   return [];
 };
 
@@ -224,7 +237,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercises as unknown as Json,
+            exercises: exercises,
           }, {
             onConflict: 'user_id,date'
           });
@@ -237,7 +250,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: meals as unknown as Json,
+            meals: meals,
           }, {
             onConflict: 'user_id,date'
           });
@@ -246,16 +259,21 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
         
         toast({
           title: "Saved",
-          description: "Your fitness data has been saved.",
+          description: "Your fitness data has been saved to the database.",
         });
       } catch (error: any) {
         console.error('Error saving data to Supabase:', error);
         toast({
           title: "Error",
-          description: "Failed to save to the cloud, but your data is saved locally.",
+          description: "Failed to save to the database, but your data is saved locally.",
           variant: "destructive",
         });
       }
+    } else {
+      toast({
+        title: "Saved Locally",
+        description: "Sign in to save your data to the cloud.",
+      });
     }
   };
 
