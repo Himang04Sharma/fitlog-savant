@@ -6,11 +6,14 @@ import { PlusCircle, Dumbbell, Apple, Save, Trash2 } from "lucide-react";
 import { format } from 'date-fns';
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface DailyLogDialogProps {
   date: Date | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  user?: any; // Add user prop to interface
 }
 
 interface Exercise {
@@ -46,7 +49,7 @@ const getDailyLog = (date: string): DailyLog => {
   return allLogs[date] || { exercises: [], meals: [] };
 };
 
-const DailyLogDialog = ({ date, open, onOpenChange }: DailyLogDialogProps) => {
+const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
@@ -67,16 +70,77 @@ const DailyLogDialog = ({ date, open, onOpenChange }: DailyLogDialogProps) => {
   });
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Load data when dialog opens or date changes
   useEffect(() => {
     if (date && open) {
       const dateString = format(date, 'yyyy-MM-dd');
-      const savedLog = getDailyLog(dateString);
-      setExercises(savedLog.exercises);
-      setMeals(savedLog.meals);
+      
+      // If user is authenticated, fetch data from Supabase
+      if (user) {
+        const fetchData = async () => {
+          try {
+            // Try to get workout logs for this date
+            const { data: workoutData, error: workoutError } = await supabase
+              .from('workout_logs')
+              .select('exercises')
+              .eq('user_id', user.id)
+              .eq('date', dateString)
+              .single();
+              
+            if (workoutError && workoutError.code !== 'PGRST116') { // PGRST116 is "not found" error
+              throw workoutError;
+            }
+            
+            // Try to get diet logs for this date
+            const { data: dietData, error: dietError } = await supabase
+              .from('diet_logs')
+              .select('meals')
+              .eq('user_id', user.id)
+              .eq('date', dateString)
+              .single();
+              
+            if (dietError && dietError.code !== 'PGRST116') { // PGRST116 is "not found" error
+              throw dietError;
+            }
+            
+            // Set exercises and meals from Supabase data if it exists
+            if (workoutData) {
+              setExercises(Array.isArray(workoutData.exercises) ? workoutData.exercises : []);
+            } else {
+              setExercises([]);
+            }
+            
+            if (dietData) {
+              setMeals(Array.isArray(dietData.meals) ? dietData.meals : []);
+            } else {
+              setMeals([]);
+            }
+          } catch (error: any) {
+            console.error('Error fetching daily logs:', error);
+            // Fallback to localStorage
+            const savedLog = getDailyLog(dateString);
+            setExercises(savedLog.exercises);
+            setMeals(savedLog.meals);
+            
+            toast({
+              title: 'Error',
+              description: 'Failed to fetch your daily logs. Using local data instead.',
+              variant: 'destructive',
+            });
+          }
+        };
+        
+        fetchData();
+      } else {
+        // Not authenticated, use localStorage
+        const savedLog = getDailyLog(dateString);
+        setExercises(savedLog.exercises);
+        setMeals(savedLog.meals);
+      }
     }
-  }, [date, open]);
+  }, [date, open, user, toast]);
 
   // Reset forms when dialog closes
   useEffect(() => {
@@ -90,10 +154,55 @@ const DailyLogDialog = ({ date, open, onOpenChange }: DailyLogDialogProps) => {
     }
   }, [open]);
 
-  const handleSaveData = () => {
-    if (date) {
-      const dateString = format(date, 'yyyy-MM-dd');
-      saveDailyLog(dateString, { exercises, meals });
+  const handleSaveData = async () => {
+    if (!date) return;
+    
+    const dateString = format(date, 'yyyy-MM-dd');
+    
+    // Save to localStorage as fallback
+    saveDailyLog(dateString, { exercises, meals });
+    
+    // If user is authenticated, save to Supabase
+    if (user) {
+      try {
+        // Save workout data
+        const { error: workoutError } = await supabase
+          .from('workout_logs')
+          .upsert({
+            user_id: user.id,
+            date: dateString,
+            exercises: exercises,
+          }, {
+            onConflict: 'user_id,date'
+          });
+          
+        if (workoutError) throw workoutError;
+        
+        // Save diet data
+        const { error: dietError } = await supabase
+          .from('diet_logs')
+          .upsert({
+            user_id: user.id,
+            date: dateString,
+            meals: meals,
+          }, {
+            onConflict: 'user_id,date'
+          });
+          
+        if (dietError) throw dietError;
+        
+        toast({
+          title: "Saved",
+          description: "Your fitness data has been saved.",
+        });
+      } catch (error: any) {
+        console.error('Error saving data to Supabase:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save to the cloud, but your data is saved locally.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -131,7 +240,7 @@ const DailyLogDialog = ({ date, open, onOpenChange }: DailyLogDialogProps) => {
     setShowExerciseForm(false);
     setEditingExerciseId(null);
 
-    // Save to local storage
+    // Save to local storage and/or Supabase
     handleSaveData();
   };
 
@@ -180,7 +289,7 @@ const DailyLogDialog = ({ date, open, onOpenChange }: DailyLogDialogProps) => {
     setShowMealForm(false);
     setEditingMealId(null);
 
-    // Save to local storage
+    // Save to local storage and/or Supabase
     handleSaveData();
   };
 

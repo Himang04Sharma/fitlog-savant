@@ -52,8 +52,8 @@ const Calendar = () => {
       Object.keys(allLogs).forEach(dateStr => {
         const log = allLogs[dateStr];
         newDateHasData[dateStr] = {
-          workout: log.exercises && log.exercises.length > 0,
-          diet: log.meals && log.meals.length > 0
+          workout: log.exercises && Array.isArray(log.exercises) && log.exercises.length > 0,
+          diet: log.meals && Array.isArray(log.meals) && log.meals.length > 0
         };
       });
       
@@ -90,7 +90,8 @@ const Calendar = () => {
           if (!newDateHasData[dateStr]) {
             newDateHasData[dateStr] = { workout: false, diet: false };
           }
-          newDateHasData[dateStr].workout = log.exercises && log.exercises.length > 0;
+          // Check if exercises is an array and has items
+          newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
         });
         
         // Process diet logs
@@ -99,7 +100,8 @@ const Calendar = () => {
           if (!newDateHasData[dateStr]) {
             newDateHasData[dateStr] = { workout: false, diet: false };
           }
-          newDateHasData[dateStr].diet = log.meals && log.meals.length > 0;
+          // Check if meals is an array and has items
+          newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
         });
         
         setDateHasData(newDateHasData);
