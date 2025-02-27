@@ -8,12 +8,13 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Json } from "@/integrations/supabase/types";
 
 interface DailyLogDialogProps {
   date: Date | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: any; // Add user prop to interface
+  user?: any;
 }
 
 interface Exercise {
@@ -47,6 +48,57 @@ const saveDailyLog = (date: string, log: DailyLog) => {
 const getDailyLog = (date: string): DailyLog => {
   const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
   return allLogs[date] || { exercises: [], meals: [] };
+};
+
+// Helper functions to safely convert Supabase JSON to our types
+const safeJsonToExercises = (data: Json | null): Exercise[] => {
+  if (!data) return [];
+  if (Array.isArray(data)) {
+    return data.map(item => {
+      if (typeof item === 'object' && item !== null) {
+        return {
+          id: String(item.id || ''),
+          name: String(item.name || ''),
+          sets: String(item.sets || ''),
+          reps: String(item.reps || ''),
+          notes: String(item.notes || '')
+        };
+      }
+      return {
+        id: '',
+        name: '',
+        sets: '',
+        reps: '',
+        notes: ''
+      };
+    });
+  }
+  return [];
+};
+
+const safeJsonToMeals = (data: Json | null): Meal[] => {
+  if (!data) return [];
+  if (Array.isArray(data)) {
+    return data.map(item => {
+      if (typeof item === 'object' && item !== null) {
+        return {
+          id: String(item.id || ''),
+          name: String(item.name || ''),
+          calories: String(item.calories || ''),
+          protein: String(item.protein || ''),
+          notes: String(item.notes || '')
+        };
+      }
+      return {
+        id: '',
+        name: '',
+        calories: '',
+        protein: '',
+        notes: ''
+      };
+    });
+  }
+  return [];
 };
 
 const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps) => {
@@ -107,13 +159,13 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
             
             // Set exercises and meals from Supabase data if it exists
             if (workoutData) {
-              setExercises(Array.isArray(workoutData.exercises) ? workoutData.exercises : []);
+              setExercises(safeJsonToExercises(workoutData.exercises));
             } else {
               setExercises([]);
             }
             
             if (dietData) {
-              setMeals(Array.isArray(dietData.meals) ? dietData.meals : []);
+              setMeals(safeJsonToMeals(dietData.meals));
             } else {
               setMeals([]);
             }
@@ -171,7 +223,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercises,
+            exercises: exercises as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
@@ -184,7 +236,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: meals,
+            meals: meals as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
