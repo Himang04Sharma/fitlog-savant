@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -9,14 +9,38 @@ const Calendar = () => {
   const [currentYear] = useState(2025);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dateHasData, setDateHasData] = useState<Record<string, { workout: boolean, diet: boolean }>>({});
   
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const hasWorkout = (day: number) => Math.random() > 0.7;
-  const hasDiet = (day: number) => Math.random() > 0.7;
+  // Load all logs from localStorage to determine which dates have data
+  useEffect(() => {
+    const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
+    const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
+    
+    Object.keys(allLogs).forEach(dateStr => {
+      const log = allLogs[dateStr];
+      newDateHasData[dateStr] = {
+        workout: log.exercises && log.exercises.length > 0,
+        diet: log.meals && log.meals.length > 0
+      };
+    });
+    
+    setDateHasData(newDateHasData);
+  }, [dialogOpen]); // Re-check when dialog closes
+
+  const hasWorkout = (day: number, month: number) => {
+    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return dateHasData[dateString]?.workout || false;
+  };
+  
+  const hasDiet = (day: number, month: number) => {
+    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return dateHasData[dateString]?.diet || false;
+  };
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -55,8 +79,8 @@ const Calendar = () => {
             <div key={`blank-${i}`} className="h-8" />
           ))}
           {days.map((day) => {
-            const isWorkout = hasWorkout(day);
-            const isDiet = hasDiet(day);
+            const isWorkout = hasWorkout(day, monthIndex);
+            const isDiet = hasDiet(day, monthIndex);
             
             return (
               <Button
