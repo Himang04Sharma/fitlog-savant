@@ -39,6 +39,51 @@ export type Database = {
         }
         Relationships: []
       }
+      diet_logs: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          meals: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          meals: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          meals?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       Workout_log: {
         Row: {
           created_at: string
@@ -66,6 +111,30 @@ export type Database = {
           reps?: number
           sets?: number
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      workout_logs: {
+        Row: {
+          created_at: string | null
+          date: string
+          exercises: Json
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          exercises: Json
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          exercises?: Json
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }

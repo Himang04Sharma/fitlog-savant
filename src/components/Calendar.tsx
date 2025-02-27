@@ -4,33 +4,119 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Calendar as CalendarIcon } from "lucide-react";
 import DailyLogDialog from './DailyLogDialog';
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const Calendar = () => {
   const [currentYear] = useState(2025);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dateHasData, setDateHasData] = useState<Record<string, { workout: boolean, diet: boolean }>>({});
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const { toast } = useToast();
   
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  // Load all logs from localStorage to determine which dates have data
+  // Check if user is authenticated
   useEffect(() => {
-    const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
-    const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
-    
-    Object.keys(allLogs).forEach(dateStr => {
-      const log = allLogs[dateStr];
-      newDateHasData[dateStr] = {
-        workout: log.exercises && log.exercises.length > 0,
-        diet: log.meals && log.meals.length > 0
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user || null);
+      
+      // Set up auth state change listener
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          setUser(session?.user || null);
+        }
+      );
+      
+      return () => {
+        authListener.subscription.unsubscribe();
       };
-    });
+    };
     
-    setDateHasData(newDateHasData);
-  }, [dialogOpen]); // Re-check when dialog closes
+    checkUser();
+  }, []);
+
+  // Load workout and diet logs from Supabase
+  useEffect(() => {
+    if (!user) {
+      // If not authenticated, use localStorage fallback
+      const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
+      const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
+      
+      Object.keys(allLogs).forEach(dateStr => {
+        const log = allLogs[dateStr];
+        newDateHasData[dateStr] = {
+          workout: log.exercises && log.exercises.length > 0,
+          diet: log.meals && log.meals.length > 0
+        };
+      });
+      
+      setDateHasData(newDateHasData);
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Get workout logs
+        const { data: workoutLogs, error: workoutError } = await supabase
+          .from('workout_logs')
+          .select('date, exercises')
+          .eq('user_id', user.id);
+          
+        if (workoutError) throw workoutError;
+        
+        // Get diet logs
+        const { data: dietLogs, error: dietError } = await supabase
+          .from('diet_logs')
+          .select('date, meals')
+          .eq('user_id', user.id);
+          
+        if (dietError) throw dietError;
+        
+        // Process data
+        const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
+        
+        // Process workout logs
+        workoutLogs?.forEach(log => {
+          const dateStr = log.date;
+          if (!newDateHasData[dateStr]) {
+            newDateHasData[dateStr] = { workout: false, diet: false };
+          }
+          newDateHasData[dateStr].workout = log.exercises && log.exercises.length > 0;
+        });
+        
+        // Process diet logs
+        dietLogs?.forEach(log => {
+          const dateStr = log.date;
+          if (!newDateHasData[dateStr]) {
+            newDateHasData[dateStr] = { workout: false, diet: false };
+          }
+          newDateHasData[dateStr].diet = log.meals && log.meals.length > 0;
+        });
+        
+        setDateHasData(newDateHasData);
+      } catch (error: any) {
+        console.error('Error fetching data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch your fitness data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [user, dialogOpen, toast]);
 
   const hasWorkout = (day: number, month: number) => {
     const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -112,9 +198,15 @@ const Calendar = () => {
         <h2 className="font-heading text-3xl font-semibold text-primary">Calendar View</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {months.map((_, index) => generateMonthCalendar(index))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-pulse text-muted-foreground">Loading your fitness data...</div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {months.map((_, index) => generateMonthCalendar(index))}
+        </div>
+      )}
 
       <div className="flex gap-6 justify-center">
         <div className="flex items-center gap-2">
@@ -131,6 +223,7 @@ const Calendar = () => {
         date={selectedDate}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+        user={user}
       />
     </div>
   );
