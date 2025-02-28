@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Calendar from '../components/Calendar';
+import LogSummary from '../components/LogSummary';
 
 const Index = () => {
   return (
@@ -12,7 +13,14 @@ const Index = () => {
             <p className="text-muted-foreground">Track your fitness journey with AI-powered insights</p>
           </div>
           
-          <Calendar />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <Calendar />
+            </div>
+            <div>
+              <LogSummary />
+            </div>
+          </div>
         </div>
       </div>
     </div>
