@@ -44,27 +44,28 @@ const Calendar = () => {
 
   // Load workout and diet logs from Supabase
   useEffect(() => {
-    if (!user) {
-      // If not authenticated, use localStorage fallback
-      const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
-      const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
-      
-      Object.keys(allLogs).forEach(dateStr => {
-        const log = allLogs[dateStr];
-        newDateHasData[dateStr] = {
-          workout: log.exercises && Array.isArray(log.exercises) && log.exercises.length > 0,
-          diet: log.meals && Array.isArray(log.meals) && log.meals.length > 0
-        };
-      });
-      
-      setDateHasData(newDateHasData);
-      setLoading(false);
-      return;
-    }
-
     const fetchData = async () => {
       setLoading(true);
+      
       try {
+        // If not authenticated, use localStorage fallback
+        if (!user) {
+          const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
+          const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
+          
+          Object.keys(allLogs).forEach(dateStr => {
+            const log = allLogs[dateStr];
+            newDateHasData[dateStr] = {
+              workout: log.exercises && Array.isArray(log.exercises) && log.exercises.length > 0,
+              diet: log.meals && Array.isArray(log.meals) && log.meals.length > 0
+            };
+          });
+          
+          setDateHasData(newDateHasData);
+          setLoading(false);
+          return;
+        }
+
         // Get workout logs
         const { data: workoutLogs, error: workoutError } = await supabase
           .from('workout_logs')
@@ -80,6 +81,9 @@ const Calendar = () => {
           .eq('user_id', user.id);
           
         if (dietError) throw dietError;
+        
+        console.log('Fetched workout logs:', workoutLogs);
+        console.log('Fetched diet logs:', dietLogs);
         
         // Process data
         const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};

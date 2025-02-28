@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { PlusCircle, Dumbbell, Apple, Save, Trash2 } from "lucide-react";
 import { format } from 'date-fns';
@@ -147,17 +147,22 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
       if (user) {
         const fetchData = async () => {
           try {
+            console.log('Fetching data for date:', dateString);
+            
             // Try to get workout logs for this date
             const { data: workoutData, error: workoutError } = await supabase
               .from('workout_logs')
               .select('exercises')
               .eq('user_id', user.id)
               .eq('date', dateString)
-              .single();
+              .maybeSingle();
               
-            if (workoutError && workoutError.code !== 'PGRST116') { // PGRST116 is "not found" error
+            if (workoutError) {
+              console.error('Workout fetch error:', workoutError);
               throw workoutError;
             }
+            
+            console.log('Workout data:', workoutData);
             
             // Try to get diet logs for this date
             const { data: dietData, error: dietError } = await supabase
@@ -165,21 +170,28 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
               .select('meals')
               .eq('user_id', user.id)
               .eq('date', dateString)
-              .single();
+              .maybeSingle();
               
-            if (dietError && dietError.code !== 'PGRST116') { // PGRST116 is "not found" error
+            if (dietError) {
+              console.error('Diet fetch error:', dietError);
               throw dietError;
             }
             
+            console.log('Diet data:', dietData);
+            
             // Set exercises and meals from Supabase data if it exists
             if (workoutData) {
-              setExercises(safeJsonToExercises(workoutData.exercises));
+              const convertedExercises = safeJsonToExercises(workoutData.exercises);
+              console.log('Converted exercises:', convertedExercises);
+              setExercises(convertedExercises);
             } else {
               setExercises([]);
             }
             
             if (dietData) {
-              setMeals(safeJsonToMeals(dietData.meals));
+              const convertedMeals = safeJsonToMeals(dietData.meals);
+              console.log('Converted meals:', convertedMeals);
+              setMeals(convertedMeals);
             } else {
               setMeals([]);
             }
@@ -231,6 +243,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
     // If user is authenticated, save to Supabase
     if (user) {
       try {
+        console.log('Saving to Supabase:', dateString);
+        console.log('Exercises to save:', exercises);
+        console.log('Meals to save:', meals);
+        
         // Save workout data
         const { error: workoutError } = await supabase
           .from('workout_logs')
@@ -395,6 +411,9 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           <DialogTitle className="text-2xl font-heading">
             Daily Log - {date ? format(date, 'MMMM d, yyyy') : ''}
           </DialogTitle>
+          <DialogDescription>
+            Track your workouts and meals for this day
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
