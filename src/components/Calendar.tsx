@@ -43,86 +43,87 @@ const Calendar = () => {
   }, []);
 
   // Load workout and diet logs from Supabase
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      
-      try {
-        // If not authenticated, use localStorage fallback
-        if (!user) {
-          const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
-          const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
-          
-          Object.keys(allLogs).forEach(dateStr => {
-            const log = allLogs[dateStr];
-            newDateHasData[dateStr] = {
-              workout: log.exercises && Array.isArray(log.exercises) && log.exercises.length > 0,
-              diet: log.meals && Array.isArray(log.meals) && log.meals.length > 0
-            };
-          });
-          
-          setDateHasData(newDateHasData);
-          setLoading(false);
-          return;
-        }
-
-        // Get workout logs
-        const { data: workoutLogs, error: workoutError } = await supabase
-          .from('workout_logs')
-          .select('date, exercises')
-          .eq('user_id', user.id);
-          
-        if (workoutError) throw workoutError;
-        
-        // Get diet logs
-        const { data: dietLogs, error: dietError } = await supabase
-          .from('diet_logs')
-          .select('date, meals')
-          .eq('user_id', user.id);
-          
-        if (dietError) throw dietError;
-        
-        console.log('Fetched workout logs:', workoutLogs);
-        console.log('Fetched diet logs:', dietLogs);
-        
-        // Process data
+  const fetchData = async () => {
+    setLoading(true);
+    
+    try {
+      // If not authenticated, use localStorage fallback
+      if (!user) {
+        const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
         const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
         
-        // Process workout logs
-        workoutLogs?.forEach(log => {
-          const dateStr = log.date;
-          if (!newDateHasData[dateStr]) {
-            newDateHasData[dateStr] = { workout: false, diet: false };
-          }
-          // Check if exercises is an array and has items
-          newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
-        });
-        
-        // Process diet logs
-        dietLogs?.forEach(log => {
-          const dateStr = log.date;
-          if (!newDateHasData[dateStr]) {
-            newDateHasData[dateStr] = { workout: false, diet: false };
-          }
-          // Check if meals is an array and has items
-          newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
+        Object.keys(allLogs).forEach(dateStr => {
+          const log = allLogs[dateStr];
+          newDateHasData[dateStr] = {
+            workout: log.exercises && Array.isArray(log.exercises) && log.exercises.length > 0,
+            diet: log.meals && Array.isArray(log.meals) && log.meals.length > 0
+          };
         });
         
         setDateHasData(newDateHasData);
-      } catch (error: any) {
-        console.error('Error fetching data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch your fitness data. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
         setLoading(false);
+        return;
       }
-    };
-    
+
+      // Get workout logs
+      const { data: workoutLogs, error: workoutError } = await supabase
+        .from('workout_logs')
+        .select('date, exercises')
+        .eq('user_id', user.id);
+        
+      if (workoutError) throw workoutError;
+      
+      // Get diet logs
+      const { data: dietLogs, error: dietError } = await supabase
+        .from('diet_logs')
+        .select('date, meals')
+        .eq('user_id', user.id);
+        
+      if (dietError) throw dietError;
+      
+      console.log('Fetched workout logs:', workoutLogs);
+      console.log('Fetched diet logs:', dietLogs);
+      
+      // Process data
+      const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
+      
+      // Process workout logs
+      workoutLogs?.forEach(log => {
+        const dateStr = log.date;
+        if (!newDateHasData[dateStr]) {
+          newDateHasData[dateStr] = { workout: false, diet: false };
+        }
+        // Check if exercises is an array and has items
+        newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
+      });
+      
+      // Process diet logs
+      dietLogs?.forEach(log => {
+        const dateStr = log.date;
+        if (!newDateHasData[dateStr]) {
+          newDateHasData[dateStr] = { workout: false, diet: false };
+        }
+        // Check if meals is an array and has items
+        newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
+      });
+      
+      setDateHasData(newDateHasData);
+    } catch (error: any) {
+      console.error('Error fetching data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch your fitness data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load data initially and when user or dialogOpen changes
+  useEffect(() => {
     fetchData();
-  }, [user, dialogOpen, toast]);
+  }, [user, dialogOpen]);
 
   const hasWorkout = (day: number, month: number) => {
     const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -146,6 +147,14 @@ const Calendar = () => {
     const clickedDate = new Date(currentYear, month, day);
     setSelectedDate(clickedDate);
     setDialogOpen(true);
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open);
+    // Refresh data when dialog closes
+    if (!open) {
+      fetchData();
+    }
   };
 
   const generateMonthCalendar = (monthIndex: number) => {
@@ -202,6 +211,10 @@ const Calendar = () => {
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-3xl font-semibold text-primary">Calendar View</h2>
+        <Button variant="outline" size="sm" onClick={fetchData}>
+          <CalendarIcon className="h-4 w-4 mr-2" />
+          Refresh Calendar
+        </Button>
       </div>
 
       {loading ? (
@@ -228,7 +241,7 @@ const Calendar = () => {
       <DailyLogDialog
         date={selectedDate}
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={handleDialogClose}
         user={user}
       />
     </div>
