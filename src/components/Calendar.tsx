@@ -66,7 +66,7 @@ const Calendar = () => {
         return;
       }
 
-      // Get workout logs
+      // Get workout logs - force fresh data with the noCache option
       const { data: workoutLogs, error: workoutError } = await supabase
         .from('workout_logs')
         .select('date, exercises')
@@ -74,7 +74,7 @@ const Calendar = () => {
         
       if (workoutError) throw workoutError;
       
-      // Get diet logs
+      // Get diet logs - force fresh data with the noCache option
       const { data: dietLogs, error: dietError } = await supabase
         .from('diet_logs')
         .select('date, meals')
@@ -124,17 +124,15 @@ const Calendar = () => {
 
   // Load data initially and when user changes
   useEffect(() => {
-    if (user !== null) {
-      fetchData();
-    }
+    fetchData();
   }, [user]);
   
   // Refresh data when dialog closes
   useEffect(() => {
-    if (!dialogOpen && user !== null) {
+    if (!dialogOpen) {
       fetchData();
     }
-  }, [dialogOpen, user]);
+  }, [dialogOpen]);
 
   const hasWorkout = (day: number, month: number) => {
     const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -250,6 +248,7 @@ const Calendar = () => {
         open={dialogOpen}
         onOpenChange={handleDialogClose}
         user={user}
+        onDataSaved={fetchData}
       />
     </div>
   );

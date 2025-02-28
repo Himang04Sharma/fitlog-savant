@@ -15,6 +15,7 @@ interface DailyLogDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user?: any;
+  onDataSaved?: () => void;
 }
 
 interface Exercise {
@@ -115,7 +116,7 @@ const safeJsonToMeals = (data: Json | null): Meal[] => {
   return [];
 };
 
-const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps) => {
+const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLogDialogProps) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(false);
@@ -277,6 +278,11 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
           
         if (dietError) throw dietError;
         
+        // Notify parent component that data has been saved
+        if (onDataSaved) {
+          onDataSaved();
+        }
+        
         toast({
           title: "Saved",
           description: "Your fitness data has been saved to the database.",
@@ -290,6 +296,11 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
         });
       }
     } else {
+      // Also call onDataSaved for local storage updates
+      if (onDataSaved) {
+        onDataSaved();
+      }
+      
       toast({
         title: "Saved Locally",
         description: "Sign in to save your data to the cloud.",
