@@ -44,6 +44,7 @@ const Calendar = () => {
 
   // Load workout and diet logs from Supabase
   const fetchData = async () => {
+    console.log('Fetching calendar data...');
     setLoading(true);
     
     try {
@@ -107,6 +108,7 @@ const Calendar = () => {
         newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
       });
       
+      console.log('Processed date data:', newDateHasData);
       setDateHasData(newDateHasData);
     } catch (error: any) {
       console.error('Error fetching data:', error);
@@ -120,10 +122,19 @@ const Calendar = () => {
     }
   };
 
-  // Load data initially and when user or dialogOpen changes
+  // Load data initially and when user changes
   useEffect(() => {
-    fetchData();
-  }, [user, dialogOpen]);
+    if (user !== null) {
+      fetchData();
+    }
+  }, [user]);
+  
+  // Refresh data when dialog closes
+  useEffect(() => {
+    if (!dialogOpen && user !== null) {
+      fetchData();
+    }
+  }, [dialogOpen, user]);
 
   const hasWorkout = (day: number, month: number) => {
     const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -151,10 +162,6 @@ const Calendar = () => {
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
-    // Refresh data when dialog closes
-    if (!open) {
-      fetchData();
-    }
   };
 
   const generateMonthCalendar = (monthIndex: number) => {

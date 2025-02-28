@@ -147,10 +147,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user }: DailyLogDialogProps)
         const dateString = format(date, 'yyyy-MM-dd');
         
         try {
+          console.log('Fetching daily log data for date:', dateString);
+          
           // If user is authenticated, fetch data from Supabase
           if (user) {
-            console.log('Fetching data for date:', dateString);
-            
             // Try to get workout logs for this date
             const { data: workoutData, error: workoutError } = await supabase
               .from('workout_logs')
