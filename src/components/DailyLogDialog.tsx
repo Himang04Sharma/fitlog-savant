@@ -252,18 +252,28 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         console.log('Exercises to save:', exercises);
         console.log('Meals to save:', meals);
         
+        // Ensure exercises and meals are properly formatted as JSON arrays
+        const exercisesJson = JSON.parse(JSON.stringify(exercises));
+        const mealsJson = JSON.parse(JSON.stringify(meals));
+        
+        console.log('Formatted exercises JSON:', exercisesJson);
+        console.log('Formatted meals JSON:', mealsJson);
+        
         // Save workout data
         const { error: workoutError } = await supabase
           .from('workout_logs')
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercises as unknown as Json,
+            exercises: exercisesJson as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
           
-        if (workoutError) throw workoutError;
+        if (workoutError) {
+          console.error('Workout save error:', workoutError);
+          throw workoutError;
+        }
         
         // Save diet data
         const { error: dietError } = await supabase
@@ -271,12 +281,15 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: meals as unknown as Json,
+            meals: mealsJson as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
           
-        if (dietError) throw dietError;
+        if (dietError) {
+          console.error('Diet save error:', dietError);
+          throw dietError;
+        }
         
         // Notify parent component that data has been saved
         if (onDataSaved) {

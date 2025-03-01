@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -43,39 +44,73 @@ const Calendar = () => {
         return;
       }
 
+      // Fetch workout logs
       const { data: workoutLogs, error: workoutError } = await supabase
         .from('workout_logs')
         .select('date, exercises')
         .eq('user_id', user.id);
         
-      if (workoutError) throw workoutError;
+      if (workoutError) {
+        console.error('Workout fetch error:', workoutError);
+        throw workoutError;
+      }
       
+      // Fetch diet logs
       const { data: dietLogs, error: dietError } = await supabase
         .from('diet_logs')
         .select('date, meals')
         .eq('user_id', user.id);
         
-      if (dietError) throw dietError;
+      if (dietError) {
+        console.error('Diet fetch error:', dietError);
+        throw dietError;
+      }
       
       console.log('Fetched workout logs:', workoutLogs?.length);
       console.log('Fetched diet logs:', dietLogs?.length);
       
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
+      // Process workout logs
       workoutLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
+        
+        // Ensure we're dealing with a proper array
+        let exercises = log.exercises;
+        if (typeof exercises === 'string') {
+          try {
+            exercises = JSON.parse(exercises);
+          } catch (e) {
+            console.error('Error parsing exercises JSON:', e);
+            exercises = [];
+          }
+        }
+        
+        newDateHasData[dateStr].workout = Array.isArray(exercises) && exercises.length > 0;
       });
       
+      // Process diet logs
       dietLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
+        
+        // Ensure we're dealing with a proper array
+        let meals = log.meals;
+        if (typeof meals === 'string') {
+          try {
+            meals = JSON.parse(meals);
+          } catch (e) {
+            console.error('Error parsing meals JSON:', e);
+            meals = [];
+          }
+        }
+        
+        newDateHasData[dateStr].diet = Array.isArray(meals) && meals.length > 0;
       });
       
       console.log('Processed date data:', Object.keys(newDateHasData).length);
