@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -6,6 +5,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import DailyLogDialog from './DailyLogDialog';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Calendar = () => {
   const [currentYear] = useState(2025);
@@ -13,42 +13,19 @@ const Calendar = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dateHasData, setDateHasData] = useState<Record<string, { workout: boolean, diet: boolean }>>({});
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
-  
+  const { user } = useAuth();
+
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  // Check if user is authenticated
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user || null);
-      
-      // Set up auth state change listener
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          setUser(session?.user || null);
-        }
-      );
-      
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
-    };
-    
-    checkUser();
-  }, []);
-
-  // Load workout and diet logs from Supabase
   const fetchData = async () => {
     console.log('Fetching calendar data...');
     setLoading(true);
     
     try {
-      // If not authenticated, use localStorage fallback
       if (!user) {
         const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
         const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
@@ -66,7 +43,6 @@ const Calendar = () => {
         return;
       }
 
-      // Get workout logs - force fresh data with the noCache option
       const { data: workoutLogs, error: workoutError } = await supabase
         .from('workout_logs')
         .select('date, exercises')
@@ -74,7 +50,6 @@ const Calendar = () => {
         
       if (workoutError) throw workoutError;
       
-      // Get diet logs - force fresh data with the noCache option
       const { data: dietLogs, error: dietError } = await supabase
         .from('diet_logs')
         .select('date, meals')
@@ -85,26 +60,21 @@ const Calendar = () => {
       console.log('Fetched workout logs:', workoutLogs);
       console.log('Fetched diet logs:', dietLogs);
       
-      // Process data
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
-      // Process workout logs
       workoutLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        // Check if exercises is an array and has items
         newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
       });
       
-      // Process diet logs
       dietLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        // Check if meals is an array and has items
         newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
       });
       
@@ -122,12 +92,10 @@ const Calendar = () => {
     }
   };
 
-  // Load data initially and when user changes
   useEffect(() => {
     fetchData();
   }, [user]);
   
-  // Refresh data when dialog closes
   useEffect(() => {
     if (!dialogOpen) {
       fetchData();

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -354,7 +353,8 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   const handleDeleteExercise = (id: string) => {
     setExercises(prev => prev.filter(ex => ex.id !== id));
-    handleSaveData();
+    // Immediately save changes after deletion
+    setTimeout(() => handleSaveData(), 0);
   };
 
   // Meal handlers
@@ -403,7 +403,8 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   const handleDeleteMeal = (id: string) => {
     setMeals(prev => prev.filter(meal => meal.id !== id));
-    handleSaveData();
+    // Immediately save changes after deletion
+    setTimeout(() => handleSaveData(), 0);
   };
 
   // Cancel form handlers
