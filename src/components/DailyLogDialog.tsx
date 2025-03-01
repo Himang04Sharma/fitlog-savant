@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -147,7 +148,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         const dateString = format(date, 'yyyy-MM-dd');
         
         try {
-          console.log('Fetching daily log data for date:', dateString);
+          console.log('Fetching daily log data for date:', dateString, 'for user:', user?.id);
           
           // If user is authenticated, fetch data from Supabase
           if (user) {
@@ -247,7 +248,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     // If user is authenticated, save to Supabase
     if (user) {
       try {
-        console.log('Saving to Supabase:', dateString);
+        console.log('Saving to Supabase for user:', user.id);
         console.log('Exercises to save:', exercises);
         console.log('Meals to save:', meals);
         

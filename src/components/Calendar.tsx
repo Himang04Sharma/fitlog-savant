@@ -22,7 +22,7 @@ const Calendar = () => {
   ];
 
   const fetchData = async () => {
-    console.log('Fetching calendar data...');
+    console.log('Fetching calendar data for user:', user?.id);
     setLoading(true);
     
     try {
@@ -57,8 +57,8 @@ const Calendar = () => {
         
       if (dietError) throw dietError;
       
-      console.log('Fetched workout logs:', workoutLogs);
-      console.log('Fetched diet logs:', dietLogs);
+      console.log('Fetched workout logs:', workoutLogs?.length);
+      console.log('Fetched diet logs:', dietLogs?.length);
       
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
@@ -78,7 +78,7 @@ const Calendar = () => {
         newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
       });
       
-      console.log('Processed date data:', newDateHasData);
+      console.log('Processed date data:', Object.keys(newDateHasData).length);
       setDateHasData(newDateHasData);
     } catch (error: any) {
       console.error('Error fetching data:', error);
@@ -128,6 +128,9 @@ const Calendar = () => {
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
+    if (!open) {
+      fetchData();
+    }
   };
 
   const generateMonthCalendar = (monthIndex: number) => {
