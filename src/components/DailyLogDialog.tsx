@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -39,7 +38,6 @@ interface DailyLog {
   meals: Meal[];
 }
 
-// Local storage helper functions
 const saveDailyLog = (date: string, log: DailyLog) => {
   const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
   allLogs[date] = log;
@@ -51,7 +49,6 @@ const getDailyLog = (date: string): DailyLog => {
   return allLogs[date] || { exercises: [], meals: [] };
 };
 
-// Helper functions to safely convert Supabase JSON to our types
 const safeJsonToExercises = (data: Json | null): Exercise[] => {
   if (!data) return [];
   
@@ -140,7 +137,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
   const [editingMealId, setEditingMealId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Load data when dialog opens or date changes
   useEffect(() => {
     if (date && open) {
       const fetchData = async () => {
@@ -150,9 +146,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         try {
           console.log('Fetching daily log data for date:', dateString, 'for user:', user?.id);
           
-          // If user is authenticated, fetch data from Supabase
           if (user) {
-            // Try to get workout logs for this date
             const { data: workoutData, error: workoutError } = await supabase
               .from('workout_logs')
               .select('exercises')
@@ -167,7 +161,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
             
             console.log('Workout data:', workoutData);
             
-            // Try to get diet logs for this date
             const { data: dietData, error: dietError } = await supabase
               .from('diet_logs')
               .select('meals')
@@ -182,7 +175,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
             
             console.log('Diet data:', dietData);
             
-            // Set exercises and meals from Supabase data if it exists
             if (workoutData) {
               const convertedExercises = safeJsonToExercises(workoutData.exercises);
               console.log('Converted exercises:', convertedExercises);
@@ -199,14 +191,12 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
               setMeals([]);
             }
           } else {
-            // Not authenticated, use localStorage
             const savedLog = getDailyLog(dateString);
             setExercises(savedLog.exercises);
             setMeals(savedLog.meals);
           }
         } catch (error: any) {
           console.error('Error fetching daily logs:', error);
-          // Fallback to localStorage
           const savedLog = getDailyLog(dateString);
           setExercises(savedLog.exercises);
           setMeals(savedLog.meals);
@@ -225,7 +215,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     }
   }, [date, open, user, toast]);
 
-  // Reset forms when dialog closes
   useEffect(() => {
     if (!open) {
       setShowExerciseForm(false);
@@ -242,30 +231,20 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     
     const dateString = format(date, 'yyyy-MM-dd');
     
-    // Save to localStorage as fallback
     saveDailyLog(dateString, { exercises, meals });
     
-    // If user is authenticated, save to Supabase
     if (user) {
       try {
         console.log('Saving to Supabase for user:', user.id);
         console.log('Exercises to save:', exercises);
         console.log('Meals to save:', meals);
         
-        // Ensure exercises and meals are properly formatted as JSON arrays
-        const exercisesJson = JSON.parse(JSON.stringify(exercises));
-        const mealsJson = JSON.parse(JSON.stringify(meals));
-        
-        console.log('Formatted exercises JSON:', exercisesJson);
-        console.log('Formatted meals JSON:', mealsJson);
-        
-        // Save workout data
         const { error: workoutError } = await supabase
           .from('workout_logs')
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercisesJson as unknown as Json,
+            exercises: exercises,
           }, {
             onConflict: 'user_id,date'
           });
@@ -275,13 +254,12 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           throw workoutError;
         }
         
-        // Save diet data
         const { error: dietError } = await supabase
           .from('diet_logs')
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: mealsJson as unknown as Json,
+            meals: meals,
           }, {
             onConflict: 'user_id,date'
           });
@@ -291,7 +269,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           throw dietError;
         }
         
-        // Notify parent component that data has been saved
         if (onDataSaved) {
           onDataSaved();
         }
@@ -309,7 +286,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         });
       }
     } else {
-      // Also call onDataSaved for local storage updates
       if (onDataSaved) {
         onDataSaved();
       }
@@ -321,7 +297,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     }
   };
 
-  // Exercise handlers
   const handleAddExercise = () => {
     setShowExerciseForm(true);
     setEditingExerciseId(null);
@@ -337,12 +312,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     if (currentExercise.name.trim() === '') return;
 
     if (editingExerciseId) {
-      // Update existing exercise
       setExercises(prev => 
         prev.map(ex => ex.id === editingExerciseId ? { ...currentExercise, id: editingExerciseId } : ex)
       );
     } else {
-      // Add new exercise
       const newExercise = {
         ...currentExercise,
         id: Date.now().toString()
@@ -350,12 +323,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
       setExercises(prev => [...prev, newExercise]);
     }
 
-    // Reset form
     setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
     setShowExerciseForm(false);
     setEditingExerciseId(null);
 
-    // Save to local storage and/or Supabase
     handleSaveData();
   };
 
@@ -367,11 +338,9 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   const handleDeleteExercise = (id: string) => {
     setExercises(prev => prev.filter(ex => ex.id !== id));
-    // Immediately save changes after deletion
     setTimeout(() => handleSaveData(), 0);
   };
 
-  // Meal handlers
   const handleAddMeal = () => {
     setShowMealForm(true);
     setEditingMealId(null);
@@ -387,12 +356,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     if (currentMeal.name.trim() === '') return;
 
     if (editingMealId) {
-      // Update existing meal
       setMeals(prev => 
         prev.map(meal => meal.id === editingMealId ? { ...currentMeal, id: editingMealId } : meal)
       );
     } else {
-      // Add new meal
       const newMeal = {
         ...currentMeal,
         id: Date.now().toString()
@@ -400,12 +367,10 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
       setMeals(prev => [...prev, newMeal]);
     }
 
-    // Reset form
     setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
     setShowMealForm(false);
     setEditingMealId(null);
 
-    // Save to local storage and/or Supabase
     handleSaveData();
   };
 
@@ -417,11 +382,9 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   const handleDeleteMeal = (id: string) => {
     setMeals(prev => prev.filter(meal => meal.id !== id));
-    // Immediately save changes after deletion
     setTimeout(() => handleSaveData(), 0);
   };
 
-  // Cancel form handlers
   const handleCancelExerciseForm = () => {
     setShowExerciseForm(false);
     setEditingExerciseId(null);
@@ -452,7 +415,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           </div>
         ) : (
           <div className="space-y-6 py-4">
-            {/* Exercise Section */}
             <div>
               <h3 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
                 <Dumbbell className="w-5 h-5 text-success" />
@@ -573,7 +535,6 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
               )}
             </div>
             
-            {/* Meal Section */}
             <div>
               <h3 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
                 <Apple className="w-5 h-5 text-secondary" />

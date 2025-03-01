@@ -78,8 +78,15 @@ const Calendar = () => {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
         
-        // Ensure we're dealing with a proper array
+        // Handle exercises in any form (object, string, array)
         let exercises = log.exercises;
+        
+        // If it's null/undefined, set an empty array
+        if (exercises === null || exercises === undefined) {
+          exercises = [];
+        }
+        
+        // If it's a string (JSON string), try to parse it
         if (typeof exercises === 'string') {
           try {
             exercises = JSON.parse(exercises);
@@ -89,7 +96,12 @@ const Calendar = () => {
           }
         }
         
-        newDateHasData[dateStr].workout = Array.isArray(exercises) && exercises.length > 0;
+        // Check if it's an array or if it has length property
+        const hasExercises = Array.isArray(exercises) ? 
+          exercises.length > 0 : 
+          (exercises && typeof exercises === 'object' && Object.keys(exercises).length > 0);
+        
+        newDateHasData[dateStr].workout = hasExercises;
       });
       
       // Process diet logs
@@ -99,8 +111,15 @@ const Calendar = () => {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
         
-        // Ensure we're dealing with a proper array
+        // Handle meals in any form (object, string, array)
         let meals = log.meals;
+        
+        // If it's null/undefined, set an empty array
+        if (meals === null || meals === undefined) {
+          meals = [];
+        }
+        
+        // If it's a string (JSON string), try to parse it
         if (typeof meals === 'string') {
           try {
             meals = JSON.parse(meals);
@@ -110,7 +129,12 @@ const Calendar = () => {
           }
         }
         
-        newDateHasData[dateStr].diet = Array.isArray(meals) && meals.length > 0;
+        // Check if it's an array or if it has length property
+        const hasMeals = Array.isArray(meals) ? 
+          meals.length > 0 : 
+          (meals && typeof meals === 'object' && Object.keys(meals).length > 0);
+        
+        newDateHasData[dateStr].diet = hasMeals;
       });
       
       console.log('Processed date data:', Object.keys(newDateHasData).length);
