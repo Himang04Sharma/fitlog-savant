@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -7,6 +6,7 @@ import DailyLogDialog from './DailyLogDialog';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Json } from "@/integrations/supabase/types";
 
 const Calendar = () => {
   const [currentYear] = useState(2025);
@@ -44,7 +44,6 @@ const Calendar = () => {
         return;
       }
 
-      // Fetch workout logs
       const { data: workoutLogs, error: workoutError } = await supabase
         .from('workout_logs')
         .select('date, exercises')
@@ -55,7 +54,6 @@ const Calendar = () => {
         throw workoutError;
       }
       
-      // Fetch diet logs
       const { data: dietLogs, error: dietError } = await supabase
         .from('diet_logs')
         .select('date, meals')
@@ -71,68 +69,50 @@ const Calendar = () => {
       
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
-      // Process workout logs
       workoutLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
         
-        // Handle exercises in any form (object, string, array)
-        let exercises = log.exercises;
+        const exercises = log.exercises;
         
-        // If it's null/undefined, set an empty array
-        if (exercises === null || exercises === undefined) {
-          exercises = [];
+        if (!exercises) {
+          newDateHasData[dateStr].workout = false;
+          return;
         }
         
-        // If it's a string (JSON string), try to parse it
-        if (typeof exercises === 'string') {
-          try {
-            exercises = JSON.parse(exercises);
-          } catch (e) {
-            console.error('Error parsing exercises JSON:', e);
-            exercises = [];
-          }
-        }
+        let hasExercises = false;
         
-        // Check if it's an array or if it has length property
-        const hasExercises = Array.isArray(exercises) ? 
-          exercises.length > 0 : 
-          (exercises && typeof exercises === 'object' && Object.keys(exercises).length > 0);
+        if (Array.isArray(exercises)) {
+          hasExercises = exercises.length > 0;
+        } else if (typeof exercises === 'object') {
+          hasExercises = Object.keys(exercises).length > 0;
+        }
         
         newDateHasData[dateStr].workout = hasExercises;
       });
       
-      // Process diet logs
       dietLogs?.forEach(log => {
         const dateStr = log.date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
         
-        // Handle meals in any form (object, string, array)
-        let meals = log.meals;
+        const meals = log.meals;
         
-        // If it's null/undefined, set an empty array
-        if (meals === null || meals === undefined) {
-          meals = [];
+        if (!meals) {
+          newDateHasData[dateStr].diet = false;
+          return;
         }
         
-        // If it's a string (JSON string), try to parse it
-        if (typeof meals === 'string') {
-          try {
-            meals = JSON.parse(meals);
-          } catch (e) {
-            console.error('Error parsing meals JSON:', e);
-            meals = [];
-          }
-        }
+        let hasMeals = false;
         
-        // Check if it's an array or if it has length property
-        const hasMeals = Array.isArray(meals) ? 
-          meals.length > 0 : 
-          (meals && typeof meals === 'object' && Object.keys(meals).length > 0);
+        if (Array.isArray(meals)) {
+          hasMeals = meals.length > 0;
+        } else if (typeof meals === 'object') {
+          hasMeals = Object.keys(meals).length > 0;
+        }
         
         newDateHasData[dateStr].diet = hasMeals;
       });

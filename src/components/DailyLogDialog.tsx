@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -244,7 +245,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercises,
+            exercises: exercises as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
@@ -259,7 +260,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: meals,
+            meals: meals as unknown as Json,
           }, {
             onConflict: 'user_id,date'
           });
