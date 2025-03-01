@@ -252,13 +252,17 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         console.log('Exercises to save:', exercises);
         console.log('Meals to save:', meals);
         
+        // Convert exercises and meals to valid JSON format
+        const exercisesJson = JSON.parse(JSON.stringify(exercises));
+        const mealsJson = JSON.parse(JSON.stringify(meals));
+        
         // Save workout data
         const { error: workoutError } = await supabase
           .from('workout_logs')
           .upsert({
             user_id: user.id,
             date: dateString,
-            exercises: exercises as unknown as Json,
+            exercises: exercisesJson as Json,
           }, {
             onConflict: 'user_id,date'
           });
@@ -271,7 +275,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           .upsert({
             user_id: user.id,
             date: dateString,
-            meals: meals as unknown as Json,
+            meals: mealsJson as Json,
           }, {
             onConflict: 'user_id,date'
           });
