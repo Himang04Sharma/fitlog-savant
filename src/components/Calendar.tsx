@@ -6,7 +6,6 @@ import DailyLogDialog from './DailyLogDialog';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Json } from "@/integrations/supabase/types";
 
 const Calendar = () => {
   const [currentYear] = useState(2025);
@@ -23,7 +22,7 @@ const Calendar = () => {
   ];
 
   const fetchData = async () => {
-    console.log('Fetching calendar data for user:', user?.id);
+    console.log('Fetching calendar data...');
     setLoading(true);
     
     try {
@@ -49,23 +48,17 @@ const Calendar = () => {
         .select('date, exercises')
         .eq('user_id', user.id);
         
-      if (workoutError) {
-        console.error('Workout fetch error:', workoutError);
-        throw workoutError;
-      }
+      if (workoutError) throw workoutError;
       
       const { data: dietLogs, error: dietError } = await supabase
         .from('diet_logs')
         .select('date, meals')
         .eq('user_id', user.id);
         
-      if (dietError) {
-        console.error('Diet fetch error:', dietError);
-        throw dietError;
-      }
+      if (dietError) throw dietError;
       
-      console.log('Fetched workout logs:', workoutLogs?.length);
-      console.log('Fetched diet logs:', dietLogs?.length);
+      console.log('Fetched workout logs:', workoutLogs);
+      console.log('Fetched diet logs:', dietLogs);
       
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
@@ -74,23 +67,7 @@ const Calendar = () => {
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        
-        const exercises = log.exercises;
-        
-        if (!exercises) {
-          newDateHasData[dateStr].workout = false;
-          return;
-        }
-        
-        let hasExercises = false;
-        
-        if (Array.isArray(exercises)) {
-          hasExercises = exercises.length > 0;
-        } else if (typeof exercises === 'object') {
-          hasExercises = Object.keys(exercises).length > 0;
-        }
-        
-        newDateHasData[dateStr].workout = hasExercises;
+        newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
       });
       
       dietLogs?.forEach(log => {
@@ -98,26 +75,10 @@ const Calendar = () => {
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        
-        const meals = log.meals;
-        
-        if (!meals) {
-          newDateHasData[dateStr].diet = false;
-          return;
-        }
-        
-        let hasMeals = false;
-        
-        if (Array.isArray(meals)) {
-          hasMeals = meals.length > 0;
-        } else if (typeof meals === 'object') {
-          hasMeals = Object.keys(meals).length > 0;
-        }
-        
-        newDateHasData[dateStr].diet = hasMeals;
+        newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
       });
       
-      console.log('Processed date data:', Object.keys(newDateHasData).length);
+      console.log('Processed date data:', newDateHasData);
       setDateHasData(newDateHasData);
     } catch (error: any) {
       console.error('Error fetching data:', error);
@@ -167,9 +128,6 @@ const Calendar = () => {
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
-    if (!open) {
-      fetchData();
-    }
   };
 
   const generateMonthCalendar = (monthIndex: number) => {
