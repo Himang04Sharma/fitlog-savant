@@ -29,42 +29,43 @@ export const saveDailyLogToSupabase = async (
     console.log('Exercises to save:', JSON.stringify(exercises));
     console.log('Meals to save:', JSON.stringify(meals));
     
+    // Always save both workout and diet logs, even with empty arrays
+    // This ensures any deleted items are properly synced
+    
     // Convert to JSON format compatible with Supabase
     const exercisesJson = JSON.parse(JSON.stringify(exercises)) as unknown as Json;
     const mealsJson = JSON.parse(JSON.stringify(meals)) as unknown as Json;
     
-    if (exercises.length > 0) {
-      const { error: workoutError } = await supabase
-        .from('workout_logs')
-        .upsert({
-          user_id: userId,
-          date: date,
-          exercises: exercisesJson,
-        }, {
-          onConflict: 'user_id,date'
-        });
-        
-      if (workoutError) {
-        console.error('Error saving exercises:', workoutError);
-        throw workoutError;
-      }
+    // Save exercises (even if empty, to overwrite previously saved data)
+    const { error: workoutError } = await supabase
+      .from('workout_logs')
+      .upsert({
+        user_id: userId,
+        date: date,
+        exercises: exercisesJson,
+      }, {
+        onConflict: 'user_id,date'
+      });
+      
+    if (workoutError) {
+      console.error('Error saving exercises:', workoutError);
+      throw workoutError;
     }
     
-    if (meals.length > 0) {
-      const { error: dietError } = await supabase
-        .from('diet_logs')
-        .upsert({
-          user_id: userId,
-          date: date,
-          meals: mealsJson,
-        }, {
-          onConflict: 'user_id,date'
-        });
-        
-      if (dietError) {
-        console.error('Error saving meals:', dietError);
-        throw dietError;
-      }
+    // Save meals (even if empty, to overwrite previously saved data)
+    const { error: dietError } = await supabase
+      .from('diet_logs')
+      .upsert({
+        user_id: userId,
+        date: date,
+        meals: mealsJson,
+      }, {
+        onConflict: 'user_id,date'
+      });
+      
+    if (dietError) {
+      console.error('Error saving meals:', dietError);
+      throw dietError;
     }
     
     return { success: true };

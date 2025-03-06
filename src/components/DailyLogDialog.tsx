@@ -135,31 +135,37 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
   };
 
   const handleAddExercise = (exercise: Exercise) => {
+    console.log('Adding exercise:', exercise);
     setExercises(prev => [...prev, exercise]);
   };
 
   const handleUpdateExercise = (exercise: Exercise) => {
+    console.log('Updating exercise:', exercise);
     setExercises(prev => 
       prev.map(ex => ex.id === exercise.id ? exercise : ex)
     );
   };
 
   const handleDeleteExercise = (id: string) => {
+    console.log('Deleting exercise with ID:', id);
     setExercises(prev => prev.filter(ex => ex.id !== id));
     handleSaveData();
   };
 
   const handleAddMeal = (meal: Meal) => {
+    console.log('Adding meal:', meal);
     setMeals(prev => [...prev, meal]);
   };
 
   const handleUpdateMeal = (meal: Meal) => {
+    console.log('Updating meal:', meal);
     setMeals(prev => 
       prev.map(m => m.id === meal.id ? meal : m)
     );
   };
 
   const handleDeleteMeal = (id: string) => {
+    console.log('Deleting meal with ID:', id);
     setMeals(prev => prev.filter(meal => meal.id !== id));
     handleSaveData();
   };

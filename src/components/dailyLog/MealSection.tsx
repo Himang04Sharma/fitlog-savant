@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +80,11 @@ const MealSection: React.FC<MealSectionProps> = ({
     setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
   };
 
+  const handleDeleteMeal = (id: string) => {
+    console.log('Deleting meal with ID:', id);
+    onDelete(id);
+  };
+
   return (
     <div>
       <h3 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
@@ -113,7 +119,7 @@ const MealSection: React.FC<MealSectionProps> = ({
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      onClick={() => onDelete(meal.id)}
+                      onClick={() => handleDeleteMeal(meal.id)}
                       className="h-8 w-8 text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
