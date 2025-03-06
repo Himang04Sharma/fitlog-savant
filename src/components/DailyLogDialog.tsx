@@ -1,13 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { PlusCircle, Dumbbell, Apple, Save, Trash2 } from "lucide-react";
 import { format } from 'date-fns';
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Json } from "@/integrations/supabase/types";
+import ExerciseSection, { Exercise } from "./dailyLog/ExerciseSection";
+import MealSection, { Meal } from "./dailyLog/MealSection";
+import { 
+  saveDailyLogLocally, 
+  getDailyLogLocally, 
+  saveDailyLogToSupabase, 
+  fetchDailyLogFromSupabase 
+} from "@/utils/dailyLogStorage";
 
 interface DailyLogDialogProps {
   date: Date | null;
@@ -17,217 +20,73 @@ interface DailyLogDialogProps {
   onDataSaved?: () => void;
 }
 
-interface Exercise {
-  id: string;
-  name: string;
-  sets: string;
-  reps: string;
-  notes: string;
-}
-
-interface Meal {
-  id: string;
-  name: string;
-  calories: string;
-  protein: string;
-  notes: string;
-}
-
-interface DailyLog {
-  exercises: Exercise[];
-  meals: Meal[];
-}
-
-const saveDailyLog = (date: string, log: DailyLog) => {
-  const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
-  allLogs[date] = log;
-  localStorage.setItem('fitnessLogs', JSON.stringify(allLogs));
-};
-
-const getDailyLog = (date: string): DailyLog => {
-  const allLogs = JSON.parse(localStorage.getItem('fitnessLogs') || '{}');
-  return allLogs[date] || { exercises: [], meals: [] };
-};
-
-const safeJsonToExercises = (data: Json | null): Exercise[] => {
-  if (!data) return [];
-  
-  try {
-    if (Array.isArray(data)) {
-      return data.map(item => {
-        if (typeof item === 'object' && item !== null) {
-          const itemObj = item as Record<string, any>;
-          return {
-            id: String(itemObj.id || ''),
-            name: String(itemObj.name || ''),
-            sets: String(itemObj.sets || ''),
-            reps: String(itemObj.reps || ''),
-            notes: String(itemObj.notes || '')
-          };
-        }
-        return {
-          id: '',
-          name: '',
-          sets: '',
-          reps: '',
-          notes: ''
-        };
-      });
-    }
-  } catch (error) {
-    console.error('Error converting JSON to exercises:', error);
-  }
-  
-  return [];
-};
-
-const safeJsonToMeals = (data: Json | null): Meal[] => {
-  if (!data) return [];
-  
-  try {
-    if (Array.isArray(data)) {
-      return data.map(item => {
-        if (typeof item === 'object' && item !== null) {
-          const itemObj = item as Record<string, any>;
-          return {
-            id: String(itemObj.id || ''),
-            name: String(itemObj.name || ''),
-            calories: String(itemObj.calories || ''),
-            protein: String(itemObj.protein || ''),
-            notes: String(itemObj.notes || '')
-          };
-        }
-        return {
-          id: '',
-          name: '',
-          calories: '',
-          protein: '',
-          notes: ''
-        };
-      });
-    }
-  } catch (error) {
-    console.error('Error converting JSON to meals:', error);
-  }
-  
-  return [];
-};
-
 const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLogDialogProps) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [showMealForm, setShowMealForm] = useState(false);
-  const [currentExercise, setCurrentExercise] = useState<Exercise>({
-    id: '',
-    name: '',
-    sets: '',
-    reps: '',
-    notes: ''
-  });
-  const [currentMeal, setCurrentMeal] = useState<Meal>({
-    id: '',
-    name: '',
-    calories: '',
-    protein: '',
-    notes: ''
-  });
-  const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
-  const [editingMealId, setEditingMealId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     if (date && open) {
-      const fetchData = async () => {
-        setLoading(true);
-        const dateString = format(date, 'yyyy-MM-dd');
-        
-        try {
-          console.log('Fetching daily log data for date:', dateString);
-          
-          if (user) {
-            const { data: workoutData, error: workoutError } = await supabase
-              .from('workout_logs')
-              .select('exercises')
-              .eq('user_id', user.id)
-              .eq('date', dateString)
-              .maybeSingle();
-              
-            if (workoutError) {
-              console.error('Workout fetch error:', workoutError);
-              throw workoutError;
-            }
-            
-            const { data: dietData, error: dietError } = await supabase
-              .from('diet_logs')
-              .select('meals')
-              .eq('user_id', user.id)
-              .eq('date', dateString)
-              .maybeSingle();
-              
-            if (dietError) {
-              console.error('Diet fetch error:', dietError);
-              throw dietError;
-            }
-            
-            if (workoutData) {
-              const convertedExercises = safeJsonToExercises(workoutData.exercises);
-              console.log('Converted exercises:', convertedExercises);
-              setExercises(convertedExercises);
-            } else {
-              setExercises([]);
-            }
-            
-            if (dietData) {
-              const convertedMeals = safeJsonToMeals(dietData.meals);
-              console.log('Converted meals:', convertedMeals);
-              setMeals(convertedMeals);
-            } else {
-              setMeals([]);
-            }
-          } else {
-            const savedLog = getDailyLog(dateString);
-            setExercises(savedLog.exercises);
-            setMeals(savedLog.meals);
-          }
-        } catch (error: any) {
-          console.error('Error fetching daily logs:', error);
-          const savedLog = getDailyLog(dateString);
-          setExercises(savedLog.exercises);
-          setMeals(savedLog.meals);
-          
-          toast({
-            title: 'Error',
-            description: 'Failed to fetch your daily logs. Using local data instead.',
-            variant: 'destructive',
-          });
-        } finally {
-          setLoading(false);
-        }
-      };
-      
       fetchData();
     }
-  }, [date, open, user, toast]);
+  }, [date, open, user]);
 
   useEffect(() => {
     if (!open) {
-      setShowExerciseForm(false);
-      setShowMealForm(false);
-      setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
-      setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
-      setEditingExerciseId(null);
-      setEditingMealId(null);
+      resetState();
     }
   }, [open]);
+
+  const resetState = () => {
+    setExercises([]);
+    setMeals([]);
+  };
+
+  const fetchData = async () => {
+    if (!date) return;
+    
+    setLoading(true);
+    const dateString = format(date, 'yyyy-MM-dd');
+    
+    try {
+      console.log('Fetching daily log data for date:', dateString);
+      
+      if (user) {
+        const { exercises: fetchedExercises, meals: fetchedMeals, error } = 
+          await fetchDailyLogFromSupabase(user.id, dateString);
+          
+        if (error) throw error;
+        
+        setExercises(fetchedExercises);
+        setMeals(fetchedMeals);
+      } else {
+        const savedLog = getDailyLogLocally(dateString);
+        setExercises(savedLog.exercises);
+        setMeals(savedLog.meals);
+      }
+    } catch (error: any) {
+      console.error('Error fetching daily logs:', error);
+      const savedLog = getDailyLogLocally(dateString);
+      setExercises(savedLog.exercises);
+      setMeals(savedLog.meals);
+      
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch your daily logs. Using local data instead.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSaveData = async () => {
     if (!date) return;
     
     const dateString = format(date, 'yyyy-MM-dd');
     
-    saveDailyLog(dateString, { exercises, meals });
+    saveDailyLogLocally(dateString, { exercises, meals });
     
     if (user) {
       try {
@@ -235,32 +94,14 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         console.log('Exercises to save:', exercises);
         console.log('Meals to save:', meals);
         
-        const exercisesJson = JSON.parse(JSON.stringify(exercises));
-        const mealsJson = JSON.parse(JSON.stringify(meals));
+        const { success, error } = await saveDailyLogToSupabase(
+          user.id, 
+          dateString, 
+          exercises, 
+          meals
+        );
         
-        const { error: workoutError } = await supabase
-          .from('workout_logs')
-          .upsert({
-            user_id: user.id,
-            date: dateString,
-            exercises: exercisesJson as Json,
-          }, {
-            onConflict: 'user_id,date'
-          });
-          
-        if (workoutError) throw workoutError;
-        
-        const { error: dietError } = await supabase
-          .from('diet_logs')
-          .upsert({
-            user_id: user.id,
-            date: dateString,
-            meals: mealsJson as Json,
-          }, {
-            onConflict: 'user_id,date'
-          });
-          
-        if (dietError) throw dietError;
+        if (!success) throw error;
         
         if (onDataSaved) {
           onDataSaved();
@@ -290,45 +131,14 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     }
   };
 
-  const handleAddExercise = () => {
-    setShowExerciseForm(true);
-    setEditingExerciseId(null);
-    setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
+  const handleAddExercise = (exercise: Exercise) => {
+    setExercises(prev => [...prev, exercise]);
   };
 
-  const handleExerciseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setCurrentExercise(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmitExercise = async () => {
-    if (currentExercise.name.trim() === '') return;
-
-    if (editingExerciseId) {
-      setExercises(prev => 
-        prev.map(ex => ex.id === editingExerciseId ? { ...currentExercise, id: editingExerciseId } : ex)
-      );
-    } else {
-      const newExercise = {
-        ...currentExercise,
-        id: Date.now().toString()
-      };
-      setExercises(prev => [...prev, newExercise]);
-    }
-
-    setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
-    setShowExerciseForm(false);
-    setEditingExerciseId(null);
-
-    setTimeout(() => {
-      handleSaveData();
-    }, 0);
-  };
-
-  const handleEditExercise = (exercise: Exercise) => {
-    setCurrentExercise(exercise);
-    setEditingExerciseId(exercise.id);
-    setShowExerciseForm(true);
+  const handleUpdateExercise = (exercise: Exercise) => {
+    setExercises(prev => 
+      prev.map(ex => ex.id === exercise.id ? exercise : ex)
+    );
   };
 
   const handleDeleteExercise = (id: string) => {
@@ -336,62 +146,19 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     handleSaveData();
   };
 
-  const handleAddMeal = () => {
-    setShowMealForm(true);
-    setEditingMealId(null);
-    setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
+  const handleAddMeal = (meal: Meal) => {
+    setMeals(prev => [...prev, meal]);
   };
 
-  const handleMealChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setCurrentMeal(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmitMeal = async () => {
-    if (currentMeal.name.trim() === '') return;
-
-    if (editingMealId) {
-      setMeals(prev => 
-        prev.map(meal => meal.id === editingMealId ? { ...currentMeal, id: editingMealId } : meal)
-      );
-    } else {
-      const newMeal = {
-        ...currentMeal,
-        id: Date.now().toString()
-      };
-      setMeals(prev => [...prev, newMeal]);
-    }
-
-    setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
-    setShowMealForm(false);
-    setEditingMealId(null);
-
-    setTimeout(() => {
-      handleSaveData();
-    }, 0);
-  };
-
-  const handleEditMeal = (meal: Meal) => {
-    setCurrentMeal(meal);
-    setEditingMealId(meal.id);
-    setShowMealForm(true);
+  const handleUpdateMeal = (meal: Meal) => {
+    setMeals(prev => 
+      prev.map(m => m.id === meal.id ? meal : m)
+    );
   };
 
   const handleDeleteMeal = (id: string) => {
     setMeals(prev => prev.filter(meal => meal.id !== id));
     handleSaveData();
-  };
-
-  const handleCancelExerciseForm = () => {
-    setShowExerciseForm(false);
-    setEditingExerciseId(null);
-    setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
-  };
-
-  const handleCancelMealForm = () => {
-    setShowMealForm(false);
-    setEditingMealId(null);
-    setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
   };
 
   return (
@@ -412,245 +179,21 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
           </div>
         ) : (
           <div className="space-y-6 py-4">
-            <div>
-              <h3 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
-                <Dumbbell className="w-5 h-5 text-success" />
-                Workout Log
-              </h3>
-              
-              {!showExerciseForm ? (
-                <div className="space-y-3">
-                  {exercises && exercises.length > 0 ? (
-                    <div className="space-y-3">
-                      {exercises.map((exercise) => (
-                        <div key={exercise.id} className="p-3 bg-success/10 rounded-lg flex justify-between">
-                          <div>
-                            <div className="font-medium">{exercise.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {exercise.sets} sets × {exercise.reps} reps
-                            </div>
-                            {exercise.notes && (
-                              <div className="text-sm mt-1">{exercise.notes}</div>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleEditExercise(exercise)}
-                              className="h-8 w-8"
-                            >
-                              <Save className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleDeleteExercise(exercise.id)}
-                              className="h-8 w-8 text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-3 bg-success/10 rounded-lg">
-                      <div className="font-medium">Your Exercises</div>
-                      <div className="text-sm text-muted-foreground">No exercises added yet</div>
-                    </div>
-                  )}
-                  <Button variant="outline" className="w-full" size="sm" onClick={handleAddExercise}>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    Add Exercise
-                  </Button>
-                </div>
-              ) : (
-                <div className="bg-card p-4 rounded-lg border space-y-3">
-                  <h4 className="font-medium">{editingExerciseId ? 'Edit Exercise' : 'Add Exercise'}</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium mb-1">Exercise Name</label>
-                      <Input 
-                        id="name"
-                        name="name"
-                        value={currentExercise.name}
-                        onChange={handleExerciseChange}
-                        placeholder="e.g., Bench Press"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label htmlFor="sets" className="block text-sm font-medium mb-1">Sets</label>
-                        <Input 
-                          id="sets"
-                          name="sets"
-                          value={currentExercise.sets}
-                          onChange={handleExerciseChange}
-                          placeholder="e.g., 3"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="reps" className="block text-sm font-medium mb-1">Reps</label>
-                        <Input 
-                          id="reps"
-                          name="reps"
-                          value={currentExercise.reps}
-                          onChange={handleExerciseChange}
-                          placeholder="e.g., 12"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="notes" className="block text-sm font-medium mb-1">Notes (optional)</label>
-                      <Textarea 
-                        id="notes"
-                        name="notes"
-                        value={currentExercise.notes}
-                        onChange={handleExerciseChange}
-                        placeholder="Add any notes or observations"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button 
-                        variant="default" 
-                        onClick={handleSubmitExercise}
-                        className="flex-1"
-                      >
-                        {editingExerciseId ? 'Update' : 'Add'} Exercise
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={handleCancelExerciseForm}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <ExerciseSection
+              exercises={exercises}
+              onSave={handleSaveData}
+              onDelete={handleDeleteExercise}
+              onAdd={handleAddExercise}
+              onUpdate={handleUpdateExercise}
+            />
             
-            <div>
-              <h3 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
-                <Apple className="w-5 h-5 text-secondary" />
-                Diet Log
-              </h3>
-              
-              {!showMealForm ? (
-                <div className="space-y-3">
-                  {meals && meals.length > 0 ? (
-                    <div className="space-y-3">
-                      {meals.map((meal) => (
-                        <div key={meal.id} className="p-3 bg-secondary/10 rounded-lg flex justify-between">
-                          <div>
-                            <div className="font-medium">{meal.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {meal.calories} calories • {meal.protein}g protein
-                            </div>
-                            {meal.notes && (
-                              <div className="text-sm mt-1">{meal.notes}</div>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleEditMeal(meal)}
-                              className="h-8 w-8"
-                            >
-                              <Save className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleDeleteMeal(meal.id)}
-                              className="h-8 w-8 text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-3 bg-secondary/10 rounded-lg">
-                      <div className="font-medium">Your Meals</div>
-                      <div className="text-sm text-muted-foreground">No meals added yet</div>
-                    </div>
-                  )}
-                  <Button variant="outline" className="w-full" size="sm" onClick={handleAddMeal}>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    Add Meal
-                  </Button>
-                </div>
-              ) : (
-                <div className="bg-card p-4 rounded-lg border space-y-3">
-                  <h4 className="font-medium">{editingMealId ? 'Edit Meal' : 'Add Meal'}</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <label htmlFor="mealName" className="block text-sm font-medium mb-1">Meal Name</label>
-                      <Input 
-                        id="mealName"
-                        name="name"
-                        value={currentMeal.name}
-                        onChange={handleMealChange}
-                        placeholder="e.g., Chicken Salad"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label htmlFor="calories" className="block text-sm font-medium mb-1">Calories</label>
-                        <Input 
-                          id="calories"
-                          name="calories"
-                          value={currentMeal.calories}
-                          onChange={handleMealChange}
-                          placeholder="e.g., 350"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="protein" className="block text-sm font-medium mb-1">Protein (g)</label>
-                        <Input 
-                          id="protein"
-                          name="protein"
-                          value={currentMeal.protein}
-                          onChange={handleMealChange}
-                          placeholder="e.g., 25"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="mealNotes" className="block text-sm font-medium mb-1">Notes (optional)</label>
-                      <Textarea 
-                        id="mealNotes"
-                        name="notes"
-                        value={currentMeal.notes}
-                        onChange={handleMealChange}
-                        placeholder="Add any notes or ingredients"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button 
-                        variant="default" 
-                        onClick={handleSubmitMeal}
-                        className="flex-1"
-                      >
-                        {editingMealId ? 'Update' : 'Add'} Meal
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={handleCancelMealForm}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <MealSection
+              meals={meals}
+              onSave={handleSaveData}
+              onDelete={handleDeleteMeal}
+              onAdd={handleAddMeal}
+              onUpdate={handleUpdateMeal}
+            />
           </div>
         )}
       </DialogContent>
