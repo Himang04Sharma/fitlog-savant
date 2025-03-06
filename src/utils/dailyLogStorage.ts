@@ -24,32 +24,48 @@ export const saveDailyLogToSupabase = async (
   meals: Meal[]
 ): Promise<{ success: boolean, error?: any }> => {
   try {
+    console.log('Saving to Supabase with userId:', userId);
+    console.log('Date:', date);
+    console.log('Exercises to save:', JSON.stringify(exercises));
+    console.log('Meals to save:', JSON.stringify(meals));
+    
+    // Convert to JSON format compatible with Supabase
     const exercisesJson = JSON.parse(JSON.stringify(exercises)) as unknown as Json;
     const mealsJson = JSON.parse(JSON.stringify(meals)) as unknown as Json;
     
-    const { error: workoutError } = await supabase
-      .from('workout_logs')
-      .upsert({
-        user_id: userId,
-        date: date,
-        exercises: exercisesJson,
-      }, {
-        onConflict: 'user_id,date'
-      });
-      
-    if (workoutError) throw workoutError;
+    if (exercises.length > 0) {
+      const { error: workoutError } = await supabase
+        .from('workout_logs')
+        .upsert({
+          user_id: userId,
+          date: date,
+          exercises: exercisesJson,
+        }, {
+          onConflict: 'user_id,date'
+        });
+        
+      if (workoutError) {
+        console.error('Error saving exercises:', workoutError);
+        throw workoutError;
+      }
+    }
     
-    const { error: dietError } = await supabase
-      .from('diet_logs')
-      .upsert({
-        user_id: userId,
-        date: date,
-        meals: mealsJson,
-      }, {
-        onConflict: 'user_id,date'
-      });
-      
-    if (dietError) throw dietError;
+    if (meals.length > 0) {
+      const { error: dietError } = await supabase
+        .from('diet_logs')
+        .upsert({
+          user_id: userId,
+          date: date,
+          meals: mealsJson,
+        }, {
+          onConflict: 'user_id,date'
+        });
+        
+      if (dietError) {
+        console.error('Error saving meals:', dietError);
+        throw dietError;
+      }
+    }
     
     return { success: true };
   } catch (error) {

@@ -60,6 +60,8 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         
         setExercises(fetchedExercises);
         setMeals(fetchedMeals);
+        console.log('Fetched exercises:', fetchedExercises);
+        console.log('Fetched meals:', fetchedMeals);
       } else {
         const savedLog = getDailyLogLocally(dateString);
         setExercises(savedLog.exercises);
@@ -85,14 +87,15 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     if (!date) return;
     
     const dateString = format(date, 'yyyy-MM-dd');
+    console.log('Saving data for date:', dateString);
+    console.log('Current exercises:', exercises);
+    console.log('Current meals:', meals);
     
     saveDailyLogLocally(dateString, { exercises, meals });
     
     if (user) {
       try {
-        console.log('Saving to Supabase:', dateString);
-        console.log('Exercises to save:', exercises);
-        console.log('Meals to save:', meals);
+        console.log('Saving to Supabase with user ID:', user.id);
         
         const { success, error } = await saveDailyLogToSupabase(
           user.id, 

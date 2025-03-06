@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,9 +64,7 @@ const MealSection: React.FC<MealSectionProps> = ({
     setShowMealForm(false);
     setEditingMealId(null);
     
-    setTimeout(() => {
-      onSave();
-    }, 0);
+    onSave();
   };
 
   const handleEditMeal = (meal: Meal) => {
