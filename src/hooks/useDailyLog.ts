@@ -68,15 +68,18 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
     }
   };
 
-  const saveData = async () => {
+  const saveData = async (updatedExercises?: Exercise[], updatedMeals?: Meal[]) => {
     if (!date) return;
     
     const dateString = format(date, 'yyyy-MM-dd');
-    console.log('Saving data for date:', dateString);
-    console.log('Current exercises:', exercises);
-    console.log('Current meals:', meals);
+    const exercisesToSave = updatedExercises || exercises;
+    const mealsToSave = updatedMeals || meals;
     
-    saveDailyLogLocally(dateString, { exercises, meals });
+    console.log('Saving data for date:', dateString);
+    console.log('Exercises to save:', exercisesToSave);
+    console.log('Meals to save:', mealsToSave);
+    
+    saveDailyLogLocally(dateString, { exercises: exercisesToSave, meals: mealsToSave });
     
     if (user) {
       try {
@@ -85,8 +88,8 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
         const { success, error } = await saveDailyLogToSupabase(
           user.id, 
           dateString, 
-          exercises, 
-          meals
+          exercisesToSave, 
+          mealsToSave
         );
         
         if (!success) throw error;
@@ -121,46 +124,52 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
 
   const handleAddExercise = (exercise: Exercise) => {
     console.log('Adding exercise:', exercise);
-    setExercises(prev => [...prev, exercise]);
-    // Immediately save data after adding exercise
-    saveData();
+    // Create a new array with the added exercise and save it directly
+    const updatedExercises = [...exercises, exercise];
+    setExercises(updatedExercises);
+    // Save data with the updated array instead of relying on state update
+    saveData(updatedExercises, meals);
   };
 
   const handleUpdateExercise = (exercise: Exercise) => {
     console.log('Updating exercise:', exercise);
-    setExercises(prev => 
-      prev.map(ex => ex.id === exercise.id ? exercise : ex)
-    );
-    // Immediately save data after updating exercise
-    saveData();
+    // Create a new array with the updated exercise and save it directly
+    const updatedExercises = exercises.map(ex => ex.id === exercise.id ? exercise : ex);
+    setExercises(updatedExercises);
+    // Save data with the updated array
+    saveData(updatedExercises, meals);
   };
 
   const handleDeleteExercise = (id: string) => {
     console.log('Deleting exercise with ID:', id);
-    setExercises(prev => prev.filter(ex => ex.id !== id));
-    saveData();
+    const updatedExercises = exercises.filter(ex => ex.id !== id);
+    setExercises(updatedExercises);
+    saveData(updatedExercises, meals);
   };
 
   const handleAddMeal = (meal: Meal) => {
     console.log('Adding meal:', meal);
-    setMeals(prev => [...prev, meal]);
-    // Immediately save data after adding meal
-    saveData();
+    // Create a new array with the added meal and save it directly
+    const updatedMeals = [...meals, meal];
+    setMeals(updatedMeals);
+    // Save data with the updated array instead of relying on state update
+    saveData(exercises, updatedMeals);
   };
 
   const handleUpdateMeal = (meal: Meal) => {
     console.log('Updating meal:', meal);
-    setMeals(prev => 
-      prev.map(m => m.id === meal.id ? meal : m)
-    );
-    // Immediately save data after updating meal
-    saveData();
+    // Create a new array with the updated meal and save it directly
+    const updatedMeals = meals.map(m => m.id === meal.id ? meal : m);
+    setMeals(updatedMeals);
+    // Save data with the updated array
+    saveData(exercises, updatedMeals);
   };
 
   const handleDeleteMeal = (id: string) => {
     console.log('Deleting meal with ID:', id);
-    setMeals(prev => prev.filter(meal => meal.id !== id));
-    saveData();
+    const updatedMeals = meals.filter(meal => meal.id !== id);
+    setMeals(updatedMeals);
+    saveData(exercises, updatedMeals);
   };
 
   return {
