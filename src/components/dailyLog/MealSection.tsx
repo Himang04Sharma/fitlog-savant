@@ -36,6 +36,12 @@ const MealSection: React.FC<MealSectionProps> = ({
     notes: ''
   });
   const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const [localMeals, setLocalMeals] = useState<Meal[]>(meals);
+
+  // Update local state when props change
+  React.useEffect(() => {
+    setLocalMeals(meals);
+  }, [meals]);
 
   const handleAddMeal = () => {
     setShowMealForm(true);
@@ -51,13 +57,17 @@ const MealSection: React.FC<MealSectionProps> = ({
   const handleSubmitMeal = () => {
     if (currentMeal.name.trim() === '') return;
 
+    const newMealId = editingMealId || Date.now().toString();
+    const updatedMeal = { ...currentMeal, id: newMealId };
+
     if (editingMealId) {
-      onUpdate({ ...currentMeal, id: editingMealId });
+      onUpdate(updatedMeal);
+      // Update local state immediately for responsive UI
+      setLocalMeals(prev => prev.map(meal => meal.id === editingMealId ? updatedMeal : meal));
     } else {
-      onAdd({
-        ...currentMeal,
-        id: Date.now().toString()
-      });
+      onAdd(updatedMeal);
+      // Update local state immediately for responsive UI
+      setLocalMeals(prev => [...prev, updatedMeal]);
     }
 
     setCurrentMeal({ id: '', name: '', calories: '', protein: '', notes: '' });
@@ -83,6 +93,8 @@ const MealSection: React.FC<MealSectionProps> = ({
   const handleDeleteMeal = (id: string) => {
     console.log('Deleting meal with ID:', id);
     onDelete(id);
+    // Update local state immediately
+    setLocalMeals(prev => prev.filter(meal => meal.id !== id));
   };
 
   return (
@@ -94,7 +106,7 @@ const MealSection: React.FC<MealSectionProps> = ({
       
       {!showMealForm ? (
         <MealList 
-          meals={meals}
+          meals={localMeals} // Use local state for immediate UI updates
           onEdit={handleEditMeal}
           onDelete={handleDeleteMeal}
           onAdd={handleAddMeal}

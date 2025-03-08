@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dumbbell } from "lucide-react";
 import ExerciseList from "./lists/ExerciseList";
 import ExerciseForm from "./forms/ExerciseForm";
@@ -36,6 +36,12 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
     notes: ''
   });
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
+  const [localExercises, setLocalExercises] = useState<Exercise[]>(exercises);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalExercises(exercises);
+  }, [exercises]);
 
   const handleAddExercise = () => {
     setShowExerciseForm(true);
@@ -51,13 +57,17 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
   const handleSubmitExercise = () => {
     if (currentExercise.name.trim() === '') return;
 
+    const newExerciseId = editingExerciseId || Date.now().toString();
+    const updatedExercise = { ...currentExercise, id: newExerciseId };
+
     if (editingExerciseId) {
-      onUpdate({ ...currentExercise, id: editingExerciseId });
+      onUpdate(updatedExercise);
+      // Update local state immediately for responsive UI
+      setLocalExercises(prev => prev.map(ex => ex.id === editingExerciseId ? updatedExercise : ex));
     } else {
-      onAdd({
-        ...currentExercise,
-        id: Date.now().toString()
-      });
+      onAdd(updatedExercise);
+      // Update local state immediately for responsive UI
+      setLocalExercises(prev => [...prev, updatedExercise]);
     }
 
     setCurrentExercise({ id: '', name: '', sets: '', reps: '', notes: '' });
@@ -83,6 +93,8 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
   const handleDeleteExercise = (id: string) => {
     console.log('Deleting exercise with ID:', id);
     onDelete(id);
+    // Update local state immediately
+    setLocalExercises(prev => prev.filter(ex => ex.id !== id));
   };
 
   return (
@@ -94,7 +106,7 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
       
       {!showExerciseForm ? (
         <ExerciseList 
-          exercises={exercises}
+          exercises={localExercises} // Use local state for immediate UI updates
           onEdit={handleEditExercise}
           onDelete={handleDeleteExercise}
           onAdd={handleAddExercise}
