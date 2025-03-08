@@ -64,6 +64,7 @@ const MealSection: React.FC<MealSectionProps> = ({
     setShowMealForm(false);
     setEditingMealId(null);
     
+    // Call onSave to ensure data is saved immediately
     onSave();
   };
 

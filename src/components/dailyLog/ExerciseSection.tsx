@@ -64,6 +64,7 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
     setShowExerciseForm(false);
     setEditingExerciseId(null);
     
+    // Call onSave to ensure data is saved immediately
     onSave();
   };
 
