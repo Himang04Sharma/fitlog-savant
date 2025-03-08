@@ -74,8 +74,7 @@ const MealSection: React.FC<MealSectionProps> = ({
     setShowMealForm(false);
     setEditingMealId(null);
     
-    // Call onSave to ensure data is saved immediately
-    onSave();
+    // No need to call onSave() here as it's now called in useDailyLog's handleAddMeal and handleUpdateMeal
   };
 
   const handleEditMeal = (meal: Meal) => {

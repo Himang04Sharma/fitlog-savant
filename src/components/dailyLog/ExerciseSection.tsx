@@ -74,8 +74,7 @@ const ExerciseSection: React.FC<ExerciseSectionProps> = ({
     setShowExerciseForm(false);
     setEditingExerciseId(null);
     
-    // Call onSave to ensure data is saved immediately
-    onSave();
+    // No need to call onSave() here as it's now called in useDailyLog's handleAddExercise and handleUpdateExercise
   };
 
   const handleEditExercise = (exercise: Exercise) => {

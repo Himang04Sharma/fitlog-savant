@@ -122,7 +122,8 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
   const handleAddExercise = (exercise: Exercise) => {
     console.log('Adding exercise:', exercise);
     setExercises(prev => [...prev, exercise]);
-    // saveData() will be called in ExerciseSection after adding the exercise
+    // Immediately save data after adding exercise
+    saveData();
   };
 
   const handleUpdateExercise = (exercise: Exercise) => {
@@ -130,7 +131,8 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
     setExercises(prev => 
       prev.map(ex => ex.id === exercise.id ? exercise : ex)
     );
-    // saveData() will be called in ExerciseSection after updating the exercise
+    // Immediately save data after updating exercise
+    saveData();
   };
 
   const handleDeleteExercise = (id: string) => {
@@ -142,7 +144,8 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
   const handleAddMeal = (meal: Meal) => {
     console.log('Adding meal:', meal);
     setMeals(prev => [...prev, meal]);
-    // saveData() will be called in MealSection after adding the meal
+    // Immediately save data after adding meal
+    saveData();
   };
 
   const handleUpdateMeal = (meal: Meal) => {
@@ -150,7 +153,8 @@ export function useDailyLog({ date, user, onDataSaved }: UseDailyLogProps) {
     setMeals(prev => 
       prev.map(m => m.id === meal.id ? meal : m)
     );
-    // saveData() will be called in MealSection after updating the meal
+    // Immediately save data after updating meal
+    saveData();
   };
 
   const handleDeleteMeal = (id: string) => {
