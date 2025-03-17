@@ -60,19 +60,9 @@ shadcn-ui - Modern UI components for a sleek design.
 
 Tailwind CSS - Utility-first CSS framework for styling.
 
-🌍 Deployment
-
-One-Click Deployment with Lovable
-
-Simply open Lovable, click on Share → Publish, and deploy instantly.
-
-Deploy on Netlify (For Custom Domains)
-
-Currently, Lovable does not support custom domains. To deploy under your own domain, we recommend using Netlify. See the official guide: Custom domains.
-
 🤝 Contributing
 
-Want to improve FitLog Servant? Feel free to fork, submit pull requests, and suggest new features.
+Want to improve FitLog ? Feel free to fork, submit pull requests, and suggest new features.
 
 📩 Contact & Support
 
