@@ -1,69 +1,82 @@
-# Welcome to your Lovable project
+FitLog
 
-## Project info
+📌 Project Overview
 
-**URL**: https://lovable.dev/projects/21df8f9c-471b-4235-9349-2a7a0bfb7b38
+**FitLog ** is your ultimate gym progress tracker, designed to help fitness enthusiasts log their workouts, diet, and progress in one place. Built with Vite, TypeScript, React, shadcn-ui, and Tailwind CSS, this project ensures a seamless and intuitive user experience.
 
-## How can I edit this code?
+🚀 Live Demo
 
-There are several ways of editing your application.
+🔗 https://fitlog-savant.lovable.app/auth
 
-**Use Lovable**
+🔧 How to Contribute & Edit
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/21df8f9c-471b-4235-9349-2a7a0bfb7b38) and start prompting.
+There are multiple ways to contribute, whether through Lovable, your own IDE, or GitHub.
 
-Changes made via Lovable will be committed automatically to this repo.
+1️⃣ Use Lovable (No Setup Required)
 
-**Use your preferred IDE**
+Visit the Lovable Project and start prompting! Changes will be committed automatically.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2️⃣ Clone & Edit Locally
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+If you prefer working in your own environment:
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository using Git URL
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to the project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+3️⃣ Edit Directly in GitHub
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Navigate to the desired file.
 
-**Use GitHub Codespaces**
+Click the Edit button (pencil icon).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Make your changes and commit them.
 
-## What technologies are used for this project?
+4️⃣ Use GitHub Codespaces (For instant cloud editing)
 
-This project is built with .
+Navigate to the repository.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Click the Code button → Select Codespaces → Click New Codespace.
 
-## How can I deploy this project?
+Edit files directly and push changes.
 
-Simply open [Lovable](https://lovable.dev/projects/21df8f9c-471b-4235-9349-2a7a0bfb7b38) and click on Share -> Publish.
+🛠️ Technologies Used
 
-## I want to use a custom domain - is that possible?
+Vite - Fast build tool for frontend projects.
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+TypeScript - Strongly typed JavaScript for better development.
+
+React - UI library for building interactive components.
+
+shadcn-ui - Modern UI components for a sleek design.
+
+Tailwind CSS - Utility-first CSS framework for styling.
+
+🌍 Deployment
+
+One-Click Deployment with Lovable
+
+Simply open Lovable, click on Share → Publish, and deploy instantly.
+
+Deploy on Netlify (For Custom Domains)
+
+Currently, Lovable does not support custom domains. To deploy under your own domain, we recommend using Netlify. See the official guide: Custom domains.
+
+🤝 Contributing
+
+Want to improve FitLog Servant? Feel free to fork, submit pull requests, and suggest new features.
+
+📩 Contact & Support
+
+For any queries or suggestions, reach out via GitHub Issues or connect on LinkedIn!
+
+🌟 If you find this project useful, please star this repo and share it with others!
+
