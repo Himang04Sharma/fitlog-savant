@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const DailyGoalsSection = () => {
-  const [goals, setGoals] = useState(['', '', '']);
+  const [goals, setGoals] = useState(['']);
   const [waterIntake, setWaterIntake] = useState(0);
   const [steps, setSteps] = useState('');
   const [weight, setWeight] = useState('');
@@ -14,6 +14,17 @@ const DailyGoalsSection = () => {
     const newGoals = [...goals];
     newGoals[index] = value;
     setGoals(newGoals);
+  };
+
+  const addGoal = () => {
+    setGoals([...goals, '']);
+  };
+
+  const removeGoal = (index: number) => {
+    if (goals.length > 1) {
+      const newGoals = goals.filter((_, i) => i !== index);
+      setGoals(newGoals);
+    }
   };
 
   const handleWaterClick = (index: number) => {
@@ -30,17 +41,40 @@ const DailyGoalsSection = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {goals.map((goal, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span className="text-emerald-600 font-bold">•</span>
-              <Input
-                value={goal}
-                onChange={(e) => handleGoalChange(index, e.target.value)}
-                placeholder={`Goal ${index + 1}`}
-                className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-emerald-300 transition-all"
-              />
-            </div>
-          ))}
+          <div className="space-y-3">
+            {goals.map((goal, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-emerald-600 font-bold">•</span>
+                <Input
+                  value={goal}
+                  onChange={(e) => handleGoalChange(index, e.target.value)}
+                  placeholder={`Goal ${index + 1}`}
+                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-emerald-300 transition-all flex-1"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && goal.trim()) {
+                      addGoal();
+                    }
+                  }}
+                />
+                {goals.length > 1 && (
+                  <button
+                    onClick={() => removeGoal(index)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            {goals[goals.length - 1]?.trim() && (
+              <button
+                onClick={addGoal}
+                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium transition-colors"
+              >
+                + Add another goal
+              </button>
+            )}
+          </div>
           
           <div className="pt-4 space-y-4">
             <div>

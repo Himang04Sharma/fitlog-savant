@@ -13,7 +13,7 @@ import {
 
 const WorkoutTrackerSection = () => {
   const [muscleGroups, setMuscleGroups] = useState(['', '', '']);
-  const [workouts, setWorkouts] = useState(Array(8).fill({ sets: '', reps: '', exercise: '' }));
+  const [workouts, setWorkouts] = useState(Array(8).fill({ sets: '', reps: '', exercise: '', weight: '' }));
 
   const muscleGroupOptions = [
     'Back', 'Bicep', 'Tricep', 'Chest', 'Legs', 'Shoulder', 'Forearms', 'Cardio', 'Core'
@@ -65,15 +65,16 @@ const WorkoutTrackerSection = () => {
           ))}
         </div>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
+        <div className="space-y-4 overflow-x-auto">
+          <div className="grid grid-cols-16 gap-3 text-sm font-medium text-gray-700 min-w-[600px]">
             <div className="col-span-2">Sets</div>
             <div className="col-span-3">Reps</div>
-            <div className="col-span-7">Exercise</div>
+            <div className="col-span-6">Exercise</div>
+            <div className="col-span-5">Weight</div>
           </div>
           
           {workouts.map((workout, index) => (
-            <div key={index} className="grid grid-cols-12 gap-4">
+            <div key={index} className="grid grid-cols-16 gap-3 min-w-[600px]">
               <div className="col-span-2">
                 <Select 
                   value={workout.sets} 
@@ -110,11 +111,20 @@ const WorkoutTrackerSection = () => {
                 </Select>
               </div>
               
-              <div className="col-span-7">
+              <div className="col-span-6">
                 <Input
                   value={workout.exercise}
                   onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
                   placeholder="Exercise name"
+                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+
+              <div className="col-span-5">
+                <Input
+                  value={workout.weight}
+                  onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}
+                  placeholder="Weight (kg/lbs)"
                   className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
                 />
               </div>
