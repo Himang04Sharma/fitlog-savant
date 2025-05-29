@@ -13,7 +13,7 @@ import {
 
 const WorkoutTrackerSection = () => {
   const [muscleGroups, setMuscleGroups] = useState(['', '', '']);
-  const [workouts, setWorkouts] = useState(Array(5).fill({ sets: '', reps: '', exercise: '' }));
+  const [workouts, setWorkouts] = useState(Array(8).fill({ sets: '', reps: '', exercise: '' }));
 
   const muscleGroupOptions = [
     'Back', 'Bicep', 'Tricep', 'Chest', 'Legs', 'Shoulder', 'Forearms', 'Cardio', 'Core'
@@ -68,8 +68,8 @@ const WorkoutTrackerSection = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
             <div className="col-span-2">Sets</div>
-            <div className="col-span-2">Reps</div>
-            <div className="col-span-8">Exercise</div>
+            <div className="col-span-3">Reps</div>
+            <div className="col-span-7">Exercise</div>
           </div>
           
           {workouts.map((workout, index) => (
@@ -92,7 +92,7 @@ const WorkoutTrackerSection = () => {
                 </Select>
               </div>
               
-              <div className="col-span-2">
+              <div className="col-span-3">
                 <Select 
                   value={workout.reps} 
                   onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
@@ -110,7 +110,7 @@ const WorkoutTrackerSection = () => {
                 </Select>
               </div>
               
-              <div className="col-span-8">
+              <div className="col-span-7">
                 <Input
                   value={workout.exercise}
                   onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
