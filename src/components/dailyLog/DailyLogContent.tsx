@@ -1,34 +1,24 @@
 
 import React from 'react';
-import ExerciseSection from "./ExerciseSection";
-import MealSection from "./MealSection";
-import { Exercise } from "./ExerciseSection";
-import { Meal } from "./MealSection";
+import DailyGoalsSection from './DailyGoalsSection';
+import MealsTableSection from './MealsTableSection';
+import WorkoutTrackerSection from './WorkoutTrackerSection';
 
 interface DailyLogContentProps {
   loading: boolean;
-  exercises: Exercise[];
-  meals: Meal[];
+  exercises: any[];
+  meals: any[];
   onSaveData: () => void;
   onDeleteExercise: (id: string) => void;
-  onAddExercise: (exercise: Exercise) => void;
-  onUpdateExercise: (exercise: Exercise) => void;
+  onAddExercise: (exercise: any) => void;
+  onUpdateExercise: (exercise: any) => void;
   onDeleteMeal: (id: string) => void;
-  onAddMeal: (meal: Meal) => void;
-  onUpdateMeal: (meal: Meal) => void;
+  onAddMeal: (meal: any) => void;
+  onUpdateMeal: (meal: any) => void;
 }
 
 const DailyLogContent: React.FC<DailyLogContentProps> = ({
-  loading,
-  exercises,
-  meals,
-  onSaveData,
-  onDeleteExercise,
-  onAddExercise,
-  onUpdateExercise,
-  onDeleteMeal,
-  onAddMeal,
-  onUpdateMeal
+  loading
 }) => {
   if (loading) {
     return (
@@ -39,22 +29,17 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
   }
 
   return (
-    <div className="space-y-6 py-4">
-      <ExerciseSection
-        exercises={exercises}
-        onSave={onSaveData}
-        onDelete={onDeleteExercise}
-        onAdd={onAddExercise}
-        onUpdate={onUpdateExercise}
-      />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 min-h-[600px]">
+      {/* Left Half - Daily Goals + Meals */}
+      <div className="space-y-6">
+        <DailyGoalsSection />
+        <MealsTableSection />
+      </div>
       
-      <MealSection
-        meals={meals}
-        onSave={onSaveData}
-        onDelete={onDeleteMeal}
-        onAdd={onAddMeal}
-        onUpdate={onUpdateMeal}
-      />
+      {/* Right Half - Workout Tracker */}
+      <div className="space-y-6">
+        <WorkoutTrackerSection />
+      </div>
     </div>
   );
 };

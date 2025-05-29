@@ -47,13 +47,13 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-heading">
-            Daily Log - {date ? format(date, 'MMMM d, yyyy') : ''}
+      <DialogContent className="sm:max-w-[80vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
+        <DialogHeader className="text-center pb-4">
+          <DialogTitle className="text-3xl font-heading font-bold text-gray-800">
+            Fitness Tracker - {date ? format(date, 'MMMM d, yyyy') : ''}
           </DialogTitle>
-          <DialogDescription>
-            Track your workouts and meals for this day
+          <DialogDescription className="text-lg text-gray-600">
+            Track your daily goals, meals, and workouts all in one place
           </DialogDescription>
         </DialogHeader>
         
