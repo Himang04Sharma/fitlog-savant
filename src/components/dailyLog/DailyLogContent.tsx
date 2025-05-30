@@ -29,15 +29,15 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 min-h-[600px]">
-      {/* Left Half - Daily Goals + Meals */}
-      <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 p-4 min-h-[600px]">
+      {/* Left Side - Daily Goals + Meals (40%) */}
+      <div className="lg:col-span-2 space-y-6">
         <DailyGoalsSection />
         <MealsTableSection />
       </div>
       
-      {/* Right Half - Workout Tracker */}
-      <div className="space-y-6">
+      {/* Right Side - Workout Tracker (60%) */}
+      <div className="lg:col-span-3 space-y-6">
         <WorkoutTrackerSection />
       </div>
     </div>

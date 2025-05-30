@@ -66,16 +66,16 @@ const WorkoutTrackerSection = () => {
         </div>
 
         <div className="space-y-4 overflow-x-auto">
-          <div className="grid grid-cols-16 gap-3 text-sm font-medium text-gray-700 min-w-[600px]">
-            <div className="col-span-2">Sets</div>
-            <div className="col-span-3">Reps</div>
+          <div className="grid grid-cols-20 gap-3 text-sm font-medium text-gray-700 min-w-[700px]">
+            <div className="col-span-3">Sets</div>
+            <div className="col-span-4">Reps</div>
             <div className="col-span-6">Exercise</div>
-            <div className="col-span-5">Weight</div>
+            <div className="col-span-7">Weight</div>
           </div>
           
           {workouts.map((workout, index) => (
-            <div key={index} className="grid grid-cols-16 gap-3 min-w-[600px]">
-              <div className="col-span-2">
+            <div key={index} className="grid grid-cols-20 gap-3 min-w-[700px]">
+              <div className="col-span-3">
                 <Select 
                   value={workout.sets} 
                   onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
@@ -93,7 +93,7 @@ const WorkoutTrackerSection = () => {
                 </Select>
               </div>
               
-              <div className="col-span-3">
+              <div className="col-span-4">
                 <Select 
                   value={workout.reps} 
                   onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
@@ -120,7 +120,7 @@ const WorkoutTrackerSection = () => {
                 />
               </div>
 
-              <div className="col-span-5">
+              <div className="col-span-7">
                 <Input
                   value={workout.weight}
                   onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}

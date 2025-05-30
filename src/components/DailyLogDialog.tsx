@@ -47,7 +47,7 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[80vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-[90vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
         <DialogHeader className="text-center pb-4">
           <DialogTitle className="text-3xl font-heading font-bold text-gray-800">
             Fitness Tracker - {date ? format(date, 'MMMM d, yyyy') : ''}
