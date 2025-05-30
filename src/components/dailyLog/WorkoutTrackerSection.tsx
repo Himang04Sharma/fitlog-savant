@@ -10,6 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const WorkoutTrackerSection = () => {
   const [muscleGroups, setMuscleGroups] = useState(['', '', '']);
@@ -65,71 +73,76 @@ const WorkoutTrackerSection = () => {
           ))}
         </div>
 
-        <div className="space-y-4 overflow-x-auto">
-          <div className="grid grid-cols-20 gap-3 text-sm font-medium text-gray-700 min-w-[700px]">
-            <div className="col-span-3">Sets</div>
-            <div className="col-span-4">Reps</div>
-            <div className="col-span-6">Exercise</div>
-            <div className="col-span-7">Weight</div>
-          </div>
-          
-          {workouts.map((workout, index) => (
-            <div key={index} className="grid grid-cols-20 gap-3 min-w-[700px]">
-              <div className="col-span-3">
-                <Select 
-                  value={workout.sets} 
-                  onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
-                >
-                  <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
-                    <SelectValue placeholder="Sets" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {setsOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="col-span-4">
-                <Select 
-                  value={workout.reps} 
-                  onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
-                >
-                  <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
-                    <SelectValue placeholder="Reps" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {repsOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="col-span-6">
-                <Input
-                  value={workout.exercise}
-                  onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
-                  placeholder="Exercise name"
-                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
-                />
-              </div>
+        <div className="bg-white/50 rounded-xl p-4">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center font-medium text-gray-700">Sets</TableHead>
+                <TableHead className="text-center font-medium text-gray-700">Reps</TableHead>
+                <TableHead className="text-center font-medium text-gray-700">Exercise</TableHead>
+                <TableHead className="text-center font-medium text-gray-700">Weight</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {workouts.map((workout, index) => (
+                <TableRow key={index}>
+                  <TableCell className="p-2">
+                    <Select 
+                      value={workout.sets} 
+                      onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
+                    >
+                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
+                        <SelectValue placeholder="Sets" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {setsOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  
+                  <TableCell className="p-2">
+                    <Select 
+                      value={workout.reps} 
+                      onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
+                    >
+                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
+                        <SelectValue placeholder="Reps" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {repsOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  
+                  <TableCell className="p-2">
+                    <Input
+                      value={workout.exercise}
+                      onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
+                      placeholder="Exercise name"
+                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
+                    />
+                  </TableCell>
 
-              <div className="col-span-7">
-                <Input
-                  value={workout.weight}
-                  onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}
-                  placeholder="Weight (kg/lbs)"
-                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
-                />
-              </div>
-            </div>
-          ))}
+                  <TableCell className="p-2">
+                    <Input
+                      value={workout.weight}
+                      onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}
+                      placeholder="Weight (kg/lbs)"
+                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
