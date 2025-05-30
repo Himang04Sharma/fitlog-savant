@@ -77,10 +77,10 @@ const WorkoutTrackerSection = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center font-medium text-gray-700">Sets</TableHead>
-                <TableHead className="text-center font-medium text-gray-700">Reps</TableHead>
-                <TableHead className="text-center font-medium text-gray-700">Exercise</TableHead>
-                <TableHead className="text-center font-medium text-gray-700">Weight</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-16">Sets</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-24">Reps</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-auto">Exercise</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-20">Weight</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -91,7 +91,7 @@ const WorkoutTrackerSection = () => {
                       value={workout.sets} 
                       onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
                     >
-                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
+                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full">
                         <SelectValue placeholder="Sets" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
@@ -109,7 +109,7 @@ const WorkoutTrackerSection = () => {
                       value={workout.reps} 
                       onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
                     >
-                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
+                      <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full">
                         <SelectValue placeholder="Reps" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
@@ -127,7 +127,7 @@ const WorkoutTrackerSection = () => {
                       value={workout.exercise}
                       onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
                       placeholder="Exercise name"
-                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
+                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
                     />
                   </TableCell>
 
@@ -135,8 +135,8 @@ const WorkoutTrackerSection = () => {
                     <Input
                       value={workout.weight}
                       onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}
-                      placeholder="Weight (kg/lbs)"
-                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300"
+                      placeholder="Weight"
+                      className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
                     />
                   </TableCell>
                 </TableRow>
