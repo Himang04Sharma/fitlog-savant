@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Dumbbell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,9 +19,22 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const WorkoutTrackerSection = () => {
-  const [muscleGroups, setMuscleGroups] = useState(['', '', '']);
-  const [workouts, setWorkouts] = useState(Array(8).fill({ sets: '', reps: '', exercise: '', weight: '' }));
+interface WorkoutTrackerSectionProps {
+  workouts?: {
+    muscleGroup: string;
+    sets: string;
+    reps: string;
+    exercise: string;
+    weight: string;
+  }[];
+  onWorkoutsChange?: (workouts: any[]) => void;
+}
+
+const WorkoutTrackerSection = ({
+  workouts = Array(8).fill({ muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }),
+  onWorkoutsChange
+}: WorkoutTrackerSectionProps) => {
+  const [muscleGroups, setMuscleGroups] = React.useState(['', '', '']);
 
   const muscleGroupOptions = [
     'Back', 'Bicep', 'Tricep', 'Chest', 'Legs', 'Shoulder', 'Forearms', 'Cardio', 'Core'
@@ -39,7 +52,7 @@ const WorkoutTrackerSection = () => {
   const handleWorkoutChange = (index: number, field: string, value: string) => {
     const newWorkouts = [...workouts];
     newWorkouts[index] = { ...newWorkouts[index], [field]: value };
-    setWorkouts(newWorkouts);
+    onWorkoutsChange?.(newWorkouts);
   };
 
   return (

@@ -9,6 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      daily_logs: {
+        Row: {
+          breakfast: string | null
+          created_at: string | null
+          dinner: string | null
+          goals: string[] | null
+          id: string
+          log_date: string
+          lunch: string | null
+          macros_calories: number | null
+          macros_carbs: number | null
+          macros_fat: number | null
+          macros_protein: number | null
+          snacks: string | null
+          steps: number | null
+          updated_at: string | null
+          user_id: string
+          water_intake: number | null
+          weight: number | null
+        }
+        Insert: {
+          breakfast?: string | null
+          created_at?: string | null
+          dinner?: string | null
+          goals?: string[] | null
+          id?: string
+          log_date: string
+          lunch?: string | null
+          macros_calories?: number | null
+          macros_carbs?: number | null
+          macros_fat?: number | null
+          macros_protein?: number | null
+          snacks?: string | null
+          steps?: number | null
+          updated_at?: string | null
+          user_id: string
+          water_intake?: number | null
+          weight?: number | null
+        }
+        Update: {
+          breakfast?: string | null
+          created_at?: string | null
+          dinner?: string | null
+          goals?: string[] | null
+          id?: string
+          log_date?: string
+          lunch?: string | null
+          macros_calories?: number | null
+          macros_carbs?: number | null
+          macros_fat?: number | null
+          macros_protein?: number | null
+          snacks?: string | null
+          steps?: number | null
+          updated_at?: string | null
+          user_id?: string
+          water_intake?: number | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
       diet_logs: {
         Row: {
           created_at: string | null
@@ -90,6 +150,47 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workouts: {
+        Row: {
+          created_at: string | null
+          daily_log_id: string
+          exercise_name: string | null
+          id: string
+          muscle_group: string | null
+          reps: string | null
+          sets: number | null
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_log_id: string
+          exercise_name?: string | null
+          id?: string
+          muscle_group?: string | null
+          reps?: string | null
+          sets?: number | null
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_log_id?: string
+          exercise_name?: string | null
+          id?: string
+          muscle_group?: string | null
+          reps?: string | null
+          sets?: number | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workouts_daily_log_id_fkey"
+            columns: ["daily_log_id"]
+            isOneToOne: false
+            referencedRelation: "daily_logs"
             referencedColumns: ["id"]
           },
         ]

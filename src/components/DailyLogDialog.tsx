@@ -1,8 +1,7 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { format } from 'date-fns';
-import { useDailyLog } from "@/hooks/useDailyLog";
 import DailyLogContent from './dailyLog/DailyLogContent';
 
 interface DailyLogDialogProps {
@@ -14,37 +13,6 @@ interface DailyLogDialogProps {
 }
 
 const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLogDialogProps) => {
-  const {
-    exercises,
-    meals,
-    loading,
-    resetState,
-    fetchData,
-    saveData,
-    handleAddExercise,
-    handleUpdateExercise,
-    handleDeleteExercise,
-    handleAddMeal,
-    handleUpdateMeal,
-    handleDeleteMeal
-  } = useDailyLog({
-    date,
-    user,
-    onDataSaved
-  });
-
-  useEffect(() => {
-    if (date && open) {
-      fetchData();
-    }
-  }, [date, open, user]);
-
-  useEffect(() => {
-    if (!open) {
-      resetState();
-    }
-  }, [open]);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[90vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
@@ -58,16 +26,9 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
         </DialogHeader>
         
         <DailyLogContent
-          loading={loading}
-          exercises={exercises}
-          meals={meals}
-          onSaveData={saveData}
-          onDeleteExercise={handleDeleteExercise}
-          onAddExercise={handleAddExercise}
-          onUpdateExercise={handleUpdateExercise}
-          onDeleteMeal={handleDeleteMeal}
-          onAddMeal={handleAddMeal}
-          onUpdateMeal={handleUpdateMeal}
+          date={date}
+          user={user}
+          onDataSaved={onDataSaved}
         />
       </DialogContent>
     </Dialog>
