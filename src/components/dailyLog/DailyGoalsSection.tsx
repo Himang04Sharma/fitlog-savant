@@ -205,14 +205,9 @@ const DailyGoalsSection = ({
             <div className="relative bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl p-6 overflow-hidden">
               {/* Animated Wave Background */}
               <div 
-                className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-400 to-cyan-500 transition-all duration-1000 ease-out rounded-2xl"
+                className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-400 to-cyan-500 transition-all duration-1000 ease-out rounded-2xl animate-pulse"
                 style={{ height: `${waterPercentage}%` }}
-              >
-                <div className="absolute inset-0 opacity-30">
-                  <div className="wave wave1"></div>
-                  <div className="wave wave2"></div>
-                </div>
-              </div>
+              />
               
               {/* Droplet Icons */}
               <div className="relative z-10 flex gap-3 justify-center">
@@ -227,8 +222,8 @@ const DailyGoalsSection = ({
                     <Droplet 
                       className={`w-7 h-7 transition-colors duration-300 ${
                         index < currentWaterCount 
-                          ? 'text-white fill-white drop-shadow-lg' 
-                          : 'text-blue-300 fill-blue-100 hover:text-blue-400'
+                          ? 'text-blue-500 fill-blue-500 drop-shadow-lg' 
+                          : 'text-white fill-white hover:text-blue-400'
                       }`}
                     />
                   </button>
@@ -317,29 +312,6 @@ const DailyGoalsSection = ({
           </div>
         </div>
       </CardContent>
-
-      {/* CSS for wave animation */}
-      <style jsx>{`
-        .wave {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 200%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-          animation: wave 3s linear infinite;
-        }
-        .wave1 {
-          animation-delay: 0s;
-        }
-        .wave2 {
-          animation-delay: 1.5s;
-        }
-        @keyframes wave {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
     </Card>
   );
 };
