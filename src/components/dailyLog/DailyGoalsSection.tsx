@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Target, Plus, X } from 'lucide-react';
+import { Target, Plus, X, Droplet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,11 +105,13 @@ const DailyGoalsSection = ({
                 <button
                   key={index}
                   onClick={() => handleDropletClick(index)}
-                  className={`text-2xl transition-all duration-200 hover:scale-110 ${
-                    index < currentWaterCount ? 'text-blue-500' : 'text-gray-300'
-                  }`}
+                  className="transition-all duration-200 hover:scale-110"
                 >
-                  💧
+                  <Droplet 
+                    className={`w-6 h-6 ${
+                      index < currentWaterCount ? 'text-blue-500 fill-blue-500' : 'text-white fill-white stroke-gray-300'
+                    }`}
+                  />
                 </button>
               ))}
             </div>
