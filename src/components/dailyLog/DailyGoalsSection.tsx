@@ -44,6 +44,14 @@ const DailyGoalsSection = ({
     }
   };
 
+  const handleDropletClick = (index: number) => {
+    const currentWater = parseInt(waterIntake) || 0;
+    const newWater = currentWater === index + 1 ? index : index + 1;
+    onWaterIntakeChange?.(newWater.toString());
+  };
+
+  const currentWaterCount = parseInt(waterIntake) || 0;
+
   return (
     <Card className="rounded-2xl shadow-lg border-0 bg-gradient-to-br from-green-50 to-emerald-50">
       <CardHeader className="pb-4">
@@ -91,14 +99,23 @@ const DailyGoalsSection = ({
         {/* Metrics Section */}
         <div className="grid grid-cols-1 gap-4 pt-4 border-t border-green-200">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">💧 Water Intake (glasses)</label>
-            <Input
-              type="number"
-              value={waterIntake}
-              onChange={(e) => onWaterIntakeChange?.(e.target.value)}
-              placeholder="Number of glasses"
-              className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-green-300 transition-all h-12"
-            />
+            <label className="text-sm font-medium text-gray-700">💧 Water Intake</label>
+            <div className="flex gap-2 justify-center">
+              {Array.from({ length: 8 }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleDropletClick(index)}
+                  className={`text-2xl transition-all duration-200 hover:scale-110 ${
+                    index < currentWaterCount ? 'text-blue-500' : 'text-gray-300'
+                  }`}
+                >
+                  💧
+                </button>
+              ))}
+            </div>
+            <div className="text-center text-sm text-gray-600">
+              {currentWaterCount} / 8 glasses
+            </div>
           </div>
 
           <div className="space-y-2">

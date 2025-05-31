@@ -58,7 +58,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
       carbs: '',
       fat: ''
     },
-    workouts: Array(8).fill({
+    workouts: Array(4).fill({
       muscleGroup: '',
       sets: '',
       reps: '',
@@ -85,7 +85,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         carbs: '',
         fat: ''
       },
-      workouts: Array(8).fill({
+      workouts: Array(4).fill({
         muscleGroup: '',
         sets: '',
         reps: '',
@@ -122,8 +122,8 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
           
         if (workoutsError) throw workoutsError;
         
-        // Convert workouts to the format expected by the UI
-        const workoutData = Array(8).fill(null).map((_, index) => {
+        // Convert workouts to the format expected by the UI - ensure minimum 4 rows
+        const workoutData = Array(Math.max(4, workouts?.length || 4)).fill(null).map((_, index) => {
           const workout = workouts?.[index];
           return workout ? {
             muscleGroup: workout.muscle_group || '',
