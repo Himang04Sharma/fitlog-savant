@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Dumbbell } from 'lucide-react';
+import { Dumbbell, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -31,7 +32,7 @@ interface WorkoutTrackerSectionProps {
 }
 
 const WorkoutTrackerSection = ({
-  workouts = Array(8).fill({ muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }),
+  workouts = Array(4).fill({ muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }),
   onWorkoutsChange
 }: WorkoutTrackerSectionProps) => {
   const [muscleGroups, setMuscleGroups] = React.useState(['', '', '']);
@@ -55,6 +56,18 @@ const WorkoutTrackerSection = ({
     onWorkoutsChange?.(newWorkouts);
   };
 
+  const addWorkoutRow = () => {
+    const newWorkouts = [...workouts, { muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }];
+    onWorkoutsChange?.(newWorkouts);
+  };
+
+  const removeWorkoutRow = (index: number) => {
+    if (workouts.length > 4) {
+      const newWorkouts = workouts.filter((_, i) => i !== index);
+      onWorkoutsChange?.(newWorkouts);
+    }
+  };
+
   return (
     <Card className="rounded-2xl shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50 h-full">
       <CardHeader className="pb-4">
@@ -74,7 +87,7 @@ const WorkoutTrackerSection = ({
                 <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300">
                   <SelectValue placeholder="Select muscle group" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent className="rounded-xl bg-white z-50">
                   {muscleGroupOptions.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
@@ -90,10 +103,11 @@ const WorkoutTrackerSection = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center font-medium text-gray-700 w-16">Sets</TableHead>
-                <TableHead className="text-center font-medium text-gray-700 w-24">Reps</TableHead>
-                <TableHead className="text-center font-medium text-gray-700 w-auto">Exercise</TableHead>
-                <TableHead className="text-center font-medium text-gray-700 w-20">Weight</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-20">Sets</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-28">Reps</TableHead>
+                <TableHead className="text-center font-medium text-gray-700">Exercise</TableHead>
+                <TableHead className="text-center font-medium text-gray-700 w-24">Weight</TableHead>
+                {workouts.length > 4 && <TableHead className="w-12"></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -107,7 +121,7 @@ const WorkoutTrackerSection = ({
                       <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full">
                         <SelectValue placeholder="Sets" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl">
+                      <SelectContent className="rounded-xl bg-white z-50">
                         {setsOptions.map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}
@@ -125,7 +139,7 @@ const WorkoutTrackerSection = ({
                       <SelectTrigger className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full">
                         <SelectValue placeholder="Reps" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl">
+                      <SelectContent className="rounded-xl bg-white z-50">
                         {repsOptions.map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}
@@ -152,10 +166,35 @@ const WorkoutTrackerSection = ({
                       className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
                     />
                   </TableCell>
+
+                  {workouts.length > 4 && (
+                    <TableCell className="p-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeWorkoutRow(index)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        ×
+                      </Button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={addWorkoutRow}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4" />
+              Add Exercise
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

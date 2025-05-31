@@ -57,16 +57,16 @@ const MealsTableSection = ({
   ];
 
   return (
-    <Card className="rounded-2xl shadow-lg border-0 bg-gradient-to-br from-orange-50 to-amber-50">
+    <Card className="rounded-2xl shadow-lg border-0 bg-gradient-to-br from-orange-50 to-amber-50 w-full">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl font-bold text-gray-800">
           <Apple className="w-6 h-6 text-orange-600" />
-          Meals
+          Meals & Nutrition
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Meals Section */}
-        <div className="space-y-4">
+        {/* Meals Grid - 2x2 layout for cleaner look */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {mealTypes.map(({ key, label, icon }) => (
             <div key={key} className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -77,18 +77,18 @@ const MealsTableSection = ({
                 value={localMeals[key as keyof typeof localMeals]}
                 onChange={(e) => handleMealChange(key as keyof typeof localMeals, e.target.value)}
                 placeholder={`What did you have for ${label.toLowerCase()}?`}
-                className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-orange-300 transition-all h-12"
+                className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-orange-300 transition-all h-10"
               />
             </div>
           ))}
         </div>
 
-        {/* Macros Section */}
+        {/* Macros Section - Horizontal layout */}
         <div className="space-y-4 pt-4 border-t border-orange-200">
           <h4 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             📊 Macros
           </h4>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {macroTypes.map(({ key, label, unit }) => (
               <div key={key} className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
@@ -98,8 +98,8 @@ const MealsTableSection = ({
                   type="number"
                   value={localMacros[key as keyof typeof localMacros]}
                   onChange={(e) => handleMacroChange(key as keyof typeof localMacros, e.target.value)}
-                  placeholder={`Enter ${label.toLowerCase()}`}
-                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-orange-300 transition-all h-12"
+                  placeholder={`${label}`}
+                  className="border-0 bg-white/70 rounded-xl focus:ring-2 focus:ring-orange-300 transition-all h-10"
                 />
               </div>
             ))}

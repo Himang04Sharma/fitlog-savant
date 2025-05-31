@@ -67,32 +67,39 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 p-4 min-h-[600px]">
-        {/* Left Side - Daily Goals + Meals (40%) */}
-        <div className="lg:col-span-2 space-y-6">
-          <DailyGoalsSection
-            goals={dailyLogData.goals}
-            waterIntake={dailyLogData.waterIntake}
-            steps={dailyLogData.steps}
-            weight={dailyLogData.weight}
-            onGoalsChange={(goals) => setDailyLogData(prev => ({ ...prev, goals }))}
-            onWaterIntakeChange={(waterIntake) => setDailyLogData(prev => ({ ...prev, waterIntake }))}
-            onStepsChange={(steps) => setDailyLogData(prev => ({ ...prev, steps }))}
-            onWeightChange={(weight) => setDailyLogData(prev => ({ ...prev, weight }))}
-          />
+      <div className="p-4 min-h-[600px] space-y-6">
+        {/* Top Section - Goals and Workouts */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Left Side - Daily Goals (40%) */}
+          <div className="lg:col-span-2">
+            <DailyGoalsSection
+              goals={dailyLogData.goals}
+              waterIntake={dailyLogData.waterIntake}
+              steps={dailyLogData.steps}
+              weight={dailyLogData.weight}
+              onGoalsChange={(goals) => setDailyLogData(prev => ({ ...prev, goals }))}
+              onWaterIntakeChange={(waterIntake) => setDailyLogData(prev => ({ ...prev, waterIntake }))}
+              onStepsChange={(steps) => setDailyLogData(prev => ({ ...prev, steps }))}
+              onWeightChange={(weight) => setDailyLogData(prev => ({ ...prev, weight }))}
+            />
+          </div>
+          
+          {/* Right Side - Workout Tracker (60%) */}
+          <div className="lg:col-span-3">
+            <WorkoutTrackerSection
+              workouts={dailyLogData.workouts}
+              onWorkoutsChange={(workouts) => setDailyLogData(prev => ({ ...prev, workouts }))}
+            />
+          </div>
+        </div>
+
+        {/* Bottom Section - Meals Table (Full Width) */}
+        <div className="w-full">
           <MealsTableSection
             meals={dailyLogData.meals}
             macros={dailyLogData.macros}
             onMealsChange={(meals) => setDailyLogData(prev => ({ ...prev, meals }))}
             onMacrosChange={(macros) => setDailyLogData(prev => ({ ...prev, macros }))}
-          />
-        </div>
-        
-        {/* Right Side - Workout Tracker (60%) */}
-        <div className="lg:col-span-3 space-y-6">
-          <WorkoutTrackerSection
-            workouts={dailyLogData.workouts}
-            onWorkoutsChange={(workouts) => setDailyLogData(prev => ({ ...prev, workouts }))}
           />
         </div>
       </div>

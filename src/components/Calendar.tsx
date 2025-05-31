@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -66,46 +65,46 @@ const Calendar = () => {
         return;
       }
 
-      // Get workout logs - force fresh data with the noCache option
-      const { data: workoutLogs, error: workoutError } = await supabase
-        .from('workout_logs')
-        .select('date, exercises')
+      // Get daily logs from the new schema
+      const { data: dailyLogs, error: dailyError } = await supabase
+        .from('daily_logs')
+        .select(`
+          log_date,
+          breakfast,
+          lunch,
+          dinner,
+          snacks,
+          workouts!workouts_daily_log_id_fkey(
+            id,
+            exercise_name
+          )
+        `)
         .eq('user_id', user.id);
         
-      if (workoutError) throw workoutError;
+      if (dailyError) throw dailyError;
       
-      // Get diet logs - force fresh data with the noCache option
-      const { data: dietLogs, error: dietError } = await supabase
-        .from('diet_logs')
-        .select('date, meals')
-        .eq('user_id', user.id);
-        
-      if (dietError) throw dietError;
-      
-      console.log('Fetched workout logs:', workoutLogs);
-      console.log('Fetched diet logs:', dietLogs);
+      console.log('Fetched daily logs:', dailyLogs);
       
       // Process data
       const newDateHasData: Record<string, { workout: boolean, diet: boolean }> = {};
       
-      // Process workout logs
-      workoutLogs?.forEach(log => {
-        const dateStr = log.date;
+      // Process daily logs
+      dailyLogs?.forEach(log => {
+        const dateStr = log.log_date;
         if (!newDateHasData[dateStr]) {
           newDateHasData[dateStr] = { workout: false, diet: false };
         }
-        // Check if exercises is an array and has items
-        newDateHasData[dateStr].workout = Array.isArray(log.exercises) && log.exercises.length > 0;
-      });
-      
-      // Process diet logs
-      dietLogs?.forEach(log => {
-        const dateStr = log.date;
-        if (!newDateHasData[dateStr]) {
-          newDateHasData[dateStr] = { workout: false, diet: false };
-        }
-        // Check if meals is an array and has items
-        newDateHasData[dateStr].diet = Array.isArray(log.meals) && log.meals.length > 0;
+        
+        // Check if meals data exists (any of the meal fields have content)
+        const hasMeals = !!(log.breakfast || log.lunch || log.dinner || log.snacks);
+        newDateHasData[dateStr].diet = hasMeals;
+        
+        // Check if workouts exist and have exercise names
+        const hasWorkouts = log.workouts && 
+          Array.isArray(log.workouts) && 
+          log.workouts.length > 0 && 
+          log.workouts.some((workout: any) => workout.exercise_name?.trim());
+        newDateHasData[dateStr].workout = hasWorkouts;
       });
       
       console.log('Processed date data:', newDateHasData);
@@ -186,7 +185,7 @@ const Calendar = () => {
           ))}
           {days.map((day) => {
             const isWorkout = hasWorkout(day, monthIndex);
-            const isDiet = hasDiet(day, monthIndex);
+            const isMeal = hasDiet(day, monthIndex);
             
             return (
               <Button
@@ -194,12 +193,12 @@ const Calendar = () => {
                 variant="ghost"
                 onClick={() => handleDateClick(day, monthIndex)}
                 className={`h-8 p-0 text-sm ${
-                  isWorkout && isDiet
-                    ? 'bg-gradient-to-br from-success/20 to-secondary/20 hover:from-success/30 hover:to-secondary/30'
+                  isWorkout && isMeal
+                    ? 'bg-gradient-to-br from-green-200 to-blue-200 hover:from-green-300 hover:to-blue-300'
                     : isWorkout
-                    ? 'bg-success/20 hover:bg-success/30'
-                    : isDiet
-                    ? 'bg-secondary/20 hover:bg-secondary/30'
+                    ? 'bg-green-200 hover:bg-green-300'
+                    : isMeal
+                    ? 'bg-blue-200 hover:bg-blue-300'
                     : ''
                 }`}
               >
@@ -234,12 +233,12 @@ const Calendar = () => {
 
       <div className="flex gap-6 justify-center">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-success/60" />
+          <div className="w-4 h-4 rounded-full bg-green-200" />
           <span className="text-sm text-muted-foreground">Workout</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-secondary/60" />
-          <span className="text-sm text-muted-foreground">Diet</span>
+          <div className="w-4 h-4 rounded-full bg-blue-200" />
+          <span className="text-sm text-muted-foreground">Meals</span>
         </div>
       </div>
 
