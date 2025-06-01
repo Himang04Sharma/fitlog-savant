@@ -1,9 +1,18 @@
 
 import React, { useState } from 'react';
-import { Apple } from 'lucide-react';
+import { Apple, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface MealsTableSectionProps {
   meals?: {
@@ -30,6 +39,17 @@ const MealsTableSection = ({
 }: MealsTableSectionProps) => {
   const [localMeals, setLocalMeals] = useState(meals);
   const [localMacros, setLocalMacros] = useState(macros);
+  
+  // Default macro targets with ability to customize
+  const [macroTargets, setMacroTargets] = useState({
+    calories: 2000,
+    protein: 150,
+    carbs: 250,
+    fat: 67
+  });
+  
+  const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
+  const [tempTargets, setTempTargets] = useState(macroTargets);
 
   const handleMealChange = (mealType: keyof typeof localMeals, value: string) => {
     const updatedMeals = { ...localMeals, [mealType]: value };
@@ -43,20 +63,26 @@ const MealsTableSection = ({
     onMacrosChange?.(updatedMacros);
   };
 
+  const handleTargetChange = (macroType: keyof typeof tempTargets, value: string) => {
+    setTempTargets({ ...tempTargets, [macroType]: parseInt(value) || 0 });
+  };
+
+  const saveGoals = () => {
+    setMacroTargets(tempTargets);
+    setIsGoalsDialogOpen(false);
+  };
+
+  const resetGoals = () => {
+    setTempTargets(macroTargets);
+    setIsGoalsDialogOpen(false);
+  };
+
   const mealTypes = [
     { key: 'breakfast', label: 'Breakfast', icon: '🌅' },
     { key: 'lunch', label: 'Lunch', icon: '☀️' },
     { key: 'dinner', label: 'Dinner', icon: '🌙' },
     { key: 'snacks', label: 'Snacks', icon: '🍎' }
   ];
-
-  // Macro targets and calculations
-  const macroTargets = {
-    calories: 2000,
-    protein: 150,
-    carbs: 250,
-    fat: 67
-  };
 
   const macroColors = {
     calories: 'bg-blue-500',
@@ -73,11 +99,87 @@ const MealsTableSection = ({
   return (
     <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
       <CardHeader className="pb-4 border-b border-gray-100">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-          <div className="p-2 bg-orange-100 rounded-lg">
-            <Apple className="w-5 h-5 text-orange-600" />
+        <CardTitle className="flex items-center justify-between text-lg font-semibold text-gray-800">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Apple className="w-5 h-5 text-orange-600" />
+            </div>
+            Meals & Nutrition
           </div>
-          Meals & Nutrition
+          
+          <Dialog open={isGoalsDialogOpen} onOpenChange={setIsGoalsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Set Daily Nutrition Goals</DialogTitle>
+                <DialogDescription>
+                  Customize your daily nutrition targets to match your fitness goals.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="calories-goal" className="text-right text-sm font-medium">
+                    Calories
+                  </label>
+                  <Input
+                    id="calories-goal"
+                    type="number"
+                    value={tempTargets.calories}
+                    onChange={(e) => handleTargetChange('calories', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="protein-goal" className="text-right text-sm font-medium">
+                    Protein (g)
+                  </label>
+                  <Input
+                    id="protein-goal"
+                    type="number"
+                    value={tempTargets.protein}
+                    onChange={(e) => handleTargetChange('protein', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="carbs-goal" className="text-right text-sm font-medium">
+                    Carbs (g)
+                  </label>
+                  <Input
+                    id="carbs-goal"
+                    type="number"
+                    value={tempTargets.carbs}
+                    onChange={(e) => handleTargetChange('carbs', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="fat-goal" className="text-right text-sm font-medium">
+                    Fat (g)
+                  </label>
+                  <Input
+                    id="fat-goal"
+                    type="number"
+                    value={tempTargets.fat}
+                    onChange={(e) => handleTargetChange('fat', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={resetGoals}>
+                  Cancel
+                </Button>
+                <Button onClick={saveGoals}>
+                  Save Goals
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </CardTitle>
       </CardHeader>
       
