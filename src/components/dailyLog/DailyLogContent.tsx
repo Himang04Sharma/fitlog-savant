@@ -66,35 +66,30 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="p-4 min-h-[600px] space-y-6">
-        {/* Top Section - Goals and Workouts */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left Side - Daily Goals (40%) */}
-          <div className="lg:col-span-2">
-            <DailyGoalsSection
-              goals={dailyLogData.goals}
-              waterIntake={dailyLogData.waterIntake}
-              steps={dailyLogData.steps}
-              weight={dailyLogData.weight}
-              onGoalsChange={(goals) => setDailyLogData(prev => ({ ...prev, goals }))}
-              onWaterIntakeChange={(waterIntake) => setDailyLogData(prev => ({ ...prev, waterIntake }))}
-              onStepsChange={(steps) => setDailyLogData(prev => ({ ...prev, steps }))}
-              onWeightChange={(weight) => setDailyLogData(prev => ({ ...prev, weight }))}
-            />
-          </div>
-          
-          {/* Right Side - Workout Tracker (60%) */}
-          <div className="lg:col-span-3">
-            <WorkoutTrackerSection
-              workouts={dailyLogData.workouts}
-              onWorkoutsChange={(workouts) => setDailyLogData(prev => ({ ...prev, workouts }))}
-            />
-          </div>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      {/* Main Grid Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Column - Daily Goals (40%) */}
+        <div className="lg:col-span-2">
+          <DailyGoalsSection
+            goals={dailyLogData.goals}
+            waterIntake={dailyLogData.waterIntake}
+            steps={dailyLogData.steps}
+            weight={dailyLogData.weight}
+            onGoalsChange={(goals) => setDailyLogData(prev => ({ ...prev, goals }))}
+            onWaterIntakeChange={(waterIntake) => setDailyLogData(prev => ({ ...prev, waterIntake }))}
+            onStepsChange={(steps) => setDailyLogData(prev => ({ ...prev, steps }))}
+            onWeightChange={(weight) => setDailyLogData(prev => ({ ...prev, weight }))}
+          />
         </div>
-
-        {/* Bottom Section - Meals Table (Full Width) */}
-        <div className="w-full">
+        
+        {/* Right Column - Workout Tracker and Meals (60%) */}
+        <div className="lg:col-span-3 space-y-6">
+          <WorkoutTrackerSection
+            workouts={dailyLogData.workouts}
+            onWorkoutsChange={(workouts) => setDailyLogData(prev => ({ ...prev, workouts }))}
+          />
+          
           <MealsTableSection
             meals={dailyLogData.meals}
             macros={dailyLogData.macros}
@@ -104,13 +99,13 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
         </div>
       </div>
 
-      {/* Save Button */}
-      <div className="flex justify-center pb-6">
+      {/* Save Button with updated styling */}
+      <div className="flex justify-center pt-4">
         <Button
           onClick={saveData}
           disabled={saving}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+          className="flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold px-8 py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Save className="w-5 h-5" />
           {saving ? 'Saving...' : 'Save Daily Log'}
