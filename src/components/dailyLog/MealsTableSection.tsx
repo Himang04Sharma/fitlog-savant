@@ -84,13 +84,6 @@ const MealsTableSection = ({
     { key: 'snacks', label: 'Snacks', icon: '🍎' }
   ];
 
-  const macroColors = {
-    calories: 'bg-blue-500',
-    protein: 'bg-green-500',
-    carbs: 'bg-orange-500',
-    fat: 'bg-red-500'
-  };
-
   const calculateProgress = (current: string, target: number) => {
     const currentValue = parseFloat(current) || 0;
     return Math.min((currentValue / target) * 100, 100);
@@ -202,14 +195,14 @@ const MealsTableSection = ({
           ))}
         </div>
 
-        {/* Macros Progress Section */}
+        {/* Daily Nutrition Progress */}
         <div className="space-y-4 pt-4 border-t border-gray-100">
           <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
             📊 Daily Nutrition Progress
           </h4>
           
           <div className="space-y-4">
-            {/* Calories */}
+            {/* Calories Progress */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -227,10 +220,7 @@ const MealsTableSection = ({
                 </span>
               </div>
               <div className="relative">
-                <Progress 
-                  value={calculateProgress(localMacros.calories, macroTargets.calories)} 
-                  className="h-2"
-                />
+                <Progress value={calculateProgress(localMacros.calories, macroTargets.calories)} className="h-2" />
                 <div 
                   className="absolute top-0 left-0 h-2 rounded-full bg-blue-500 transition-all"
                   style={{ width: `${calculateProgress(localMacros.calories, macroTargets.calories)}%` }}
@@ -238,7 +228,7 @@ const MealsTableSection = ({
               </div>
             </div>
 
-            {/* Protein */}
+            {/* Protein Progress */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -256,10 +246,7 @@ const MealsTableSection = ({
                 </span>
               </div>
               <div className="relative">
-                <Progress 
-                  value={calculateProgress(localMacros.protein, macroTargets.protein)} 
-                  className="h-2"
-                />
+                <Progress value={calculateProgress(localMacros.protein, macroTargets.protein)} className="h-2" />
                 <div 
                   className="absolute top-0 left-0 h-2 rounded-full bg-green-500 transition-all"
                   style={{ width: `${calculateProgress(localMacros.protein, macroTargets.protein)}%` }}
@@ -267,7 +254,7 @@ const MealsTableSection = ({
               </div>
             </div>
 
-            {/* Carbs */}
+            {/* Carbs Progress */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -285,10 +272,7 @@ const MealsTableSection = ({
                 </span>
               </div>
               <div className="relative">
-                <Progress 
-                  value={calculateProgress(localMacros.carbs, macroTargets.carbs)} 
-                  className="h-2"
-                />
+                <Progress value={calculateProgress(localMacros.carbs, macroTargets.carbs)} className="h-2" />
                 <div 
                   className="absolute top-0 left-0 h-2 rounded-full bg-orange-500 transition-all"
                   style={{ width: `${calculateProgress(localMacros.carbs, macroTargets.carbs)}%` }}
@@ -296,7 +280,7 @@ const MealsTableSection = ({
               </div>
             </div>
 
-            {/* Fat */}
+            {/* Fat Progress */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -314,10 +298,7 @@ const MealsTableSection = ({
                 </span>
               </div>
               <div className="relative">
-                <Progress 
-                  value={calculateProgress(localMacros.fat, macroTargets.fat)} 
-                  className="h-2"
-                />
+                <Progress value={calculateProgress(localMacros.fat, macroTargets.fat)} className="h-2" />
                 <div 
                   className="absolute top-0 left-0 h-2 rounded-full bg-red-500 transition-all"
                   style={{ width: `${calculateProgress(localMacros.fat, macroTargets.fat)}%` }}

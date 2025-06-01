@@ -34,6 +34,11 @@ const WorkoutTrackerSection = ({
   const setsOptions = ['1', '2', '3', '4', '5'];
   const repsOptions = ['8-10', '10-12', '12-15'];
 
+  // Group workouts by muscle groups (3 groups of 3 exercises each)
+  const muscleGroup1 = workouts.slice(0, 3);
+  const muscleGroup2 = workouts.slice(3, 6);
+  const muscleGroup3 = workouts.slice(6, 9);
+
   const handleWorkoutChange = (index: number, field: string, value: string) => {
     const newWorkouts = [...workouts];
     newWorkouts[index] = { ...newWorkouts[index], [field]: value };
@@ -45,11 +50,99 @@ const WorkoutTrackerSection = ({
     onWorkoutsChange?.(newWorkouts);
   };
 
-  const removeWorkoutRow = (index: number) => {
-    if (workouts.length > 9) {
-      const newWorkouts = workouts.filter((_, i) => i !== index);
-      onWorkoutsChange?.(newWorkouts);
-    }
+  const renderMuscleGroup = (groupWorkouts: any[], groupIndex: number, groupTitle: string) => {
+    return (
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">{groupTitle}</h4>
+        
+        {/* Muscle Group Selector */}
+        <Select 
+          value={groupWorkouts[0]?.muscleGroup || ''} 
+          onValueChange={(value) => {
+            // Set the muscle group for all exercises in this group
+            groupWorkouts.forEach((_, exerciseIndex) => {
+              const globalIndex = groupIndex * 3 + exerciseIndex;
+              handleWorkoutChange(globalIndex, 'muscleGroup', value);
+            });
+          }}
+        >
+          <SelectTrigger className="w-full h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
+            <SelectValue placeholder="Select muscle group" />
+          </SelectTrigger>
+          <SelectContent className="rounded-lg bg-white z-50">
+            {muscleGroupOptions.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Column Headers */}
+        <div className="grid grid-cols-4 gap-2 px-2 py-1 text-xs font-medium text-gray-600 bg-gray-50 rounded">
+          <div>Sets</div>
+          <div>Reps</div>
+          <div>Exercise</div>
+          <div>Weight (kg)</div>
+        </div>
+
+        {/* Exercise Rows */}
+        <div className="space-y-2">
+          {groupWorkouts.map((workout, exerciseIndex) => {
+            const globalIndex = groupIndex * 3 + exerciseIndex;
+            return (
+              <div key={globalIndex} className="grid grid-cols-4 gap-2">
+                <Select 
+                  value={workout.sets} 
+                  onValueChange={(value) => handleWorkoutChange(globalIndex, 'sets', value)}
+                >
+                  <SelectTrigger className="h-8 border-gray-200 rounded focus:ring-2 focus:ring-teal-300 bg-white text-xs">
+                    <SelectValue placeholder="Sets" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded bg-white z-50">
+                    {setsOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select 
+                  value={workout.reps} 
+                  onValueChange={(value) => handleWorkoutChange(globalIndex, 'reps', value)}
+                >
+                  <SelectTrigger className="h-8 border-gray-200 rounded focus:ring-2 focus:ring-teal-300 bg-white text-xs">
+                    <SelectValue placeholder="Reps" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded bg-white z-50">
+                    {repsOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Input
+                  value={workout.exercise}
+                  onChange={(e) => handleWorkoutChange(globalIndex, 'exercise', e.target.value)}
+                  placeholder="Exercise"
+                  className="h-8 border-gray-200 rounded focus:ring-2 focus:ring-teal-300 bg-white text-xs"
+                />
+
+                <Input
+                  value={workout.weight}
+                  onChange={(e) => handleWorkoutChange(globalIndex, 'weight', e.target.value)}
+                  placeholder="Weight"
+                  className="h-8 border-gray-200 rounded focus:ring-2 focus:ring-teal-300 bg-white text-xs"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -64,96 +157,15 @@ const WorkoutTrackerSection = ({
       </CardHeader>
       
       <CardContent className="p-6">
-        {/* Column Headers */}
-        <div className="grid grid-cols-6 gap-3 mb-4 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg">
-          <div>Muscle Group</div>
-          <div>Sets</div>
-          <div>Reps</div>
-          <div className="col-span-2">Exercise</div>
-          <div>Weight (kg)</div>
-        </div>
-
-        {/* Workout Rows */}
-        <div className="space-y-3">
-          {workouts.map((workout, index) => (
-            <div key={index} className="grid grid-cols-6 gap-3 p-3 rounded-lg border border-gray-100 transition-colors hover:bg-gray-50">
-              <div>
-                <Select 
-                  value={workout.muscleGroup} 
-                  onValueChange={(value) => handleWorkoutChange(index, 'muscleGroup', value)}
-                >
-                  <SelectTrigger className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-lg bg-white z-50">
-                    {muscleGroupOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Select 
-                  value={workout.sets} 
-                  onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
-                >
-                  <SelectTrigger className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
-                    <SelectValue placeholder="Sets" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-lg bg-white z-50">
-                    {setsOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Select 
-                  value={workout.reps} 
-                  onValueChange={(value) => handleWorkoutChange(index, 'reps', value)}
-                >
-                  <SelectTrigger className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
-                    <SelectValue placeholder="Reps" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-lg bg-white z-50">
-                    {repsOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="col-span-2">
-                <Input
-                  value={workout.exercise}
-                  onChange={(e) => handleWorkoutChange(index, 'exercise', e.target.value)}
-                  placeholder="Exercise name"
-                  className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white"
-                />
-              </div>
-
-              <div>
-                <Input
-                  value={workout.weight}
-                  onChange={(e) => handleWorkoutChange(index, 'weight', e.target.value)}
-                  placeholder="Weight"
-                  className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white"
-                />
-              </div>
-            </div>
-          ))}
+        {/* Three Muscle Groups in a Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {renderMuscleGroup(muscleGroup1, 0, "Muscle Group 1")}
+          {renderMuscleGroup(muscleGroup2, 1, "Muscle Group 2")}
+          {renderMuscleGroup(muscleGroup3, 2, "Muscle Group 3")}
         </div>
 
         {/* Add Exercise Button */}
-        <div className="flex justify-center mt-4 pt-4 border-t border-gray-100">
+        <div className="flex justify-center mt-6 pt-4 border-t border-gray-100">
           <Button
             onClick={addWorkoutRow}
             variant="ghost"
