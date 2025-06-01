@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProgressRing from './components/ProgressRing';
@@ -31,6 +31,11 @@ const DailyGoalsSection = ({
 }: DailyGoalsSectionProps) => {
   const [completedGoals, setCompletedGoals] = useState<boolean[]>(goals.map(() => false));
 
+  // Reset completed goals when goals change from parent
+  useEffect(() => {
+    setCompletedGoals(goals.map(() => false));
+  }, [goals.length]);
+
   const handleGoalChange = (index: number, value: string) => {
     const newGoals = [...goals];
     newGoals[index] = value;
@@ -41,6 +46,13 @@ const DailyGoalsSection = ({
     const newCompleted = [...completedGoals];
     newCompleted[index] = !newCompleted[index];
     setCompletedGoals(newCompleted);
+
+    // If goal is being completed, remove it after a short delay for visual feedback
+    if (!newCompleted[index] === false) { // Goal is being marked as completed
+      setTimeout(() => {
+        removeGoal(index);
+      }, 500); // Give time for the animation to show
+    }
   };
 
   const addGoal = () => {
@@ -57,7 +69,7 @@ const DailyGoalsSection = ({
     }
   };
 
-  // Calculate completion percentage
+  // Calculate completion percentage for remaining goals
   const completionRate = goals.length > 0 ? (completedGoals.filter(Boolean).length / goals.length) * 100 : 0;
 
   return (

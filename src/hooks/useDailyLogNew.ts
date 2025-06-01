@@ -209,10 +209,13 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null
       };
       
-      // Upsert daily log
+      // Use upsert with proper conflict resolution
       const { data: dailyLog, error: dailyLogError } = await supabase
         .from('daily_logs')
-        .upsert(dailyLogPayload)
+        .upsert(dailyLogPayload, {
+          onConflict: 'user_id,log_date',
+          ignoreDuplicates: false
+        })
         .select()
         .single();
         
