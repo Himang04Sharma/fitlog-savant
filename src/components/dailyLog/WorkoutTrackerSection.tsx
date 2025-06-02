@@ -124,7 +124,7 @@ const WorkoutTrackerSection = ({
 
           {/* Exercise Rows */}
           <div className="space-y-3">
-            {workouts.slice(0, 4).map((workout, index) => (
+            {workouts.map((workout, index) => (
               <div key={index} className="grid gap-4" style={{ gridTemplateColumns: '60px 80px 1fr 80px' }}>
                 <Select 
                   value={workout.sets} 

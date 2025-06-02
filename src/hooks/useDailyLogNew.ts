@@ -190,6 +190,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
     
     try {
       console.log('Saving daily log data for date:', dateString);
+      console.log('Current workouts data:', dailyLogData.workouts);
       
       // Prepare daily log data
       const dailyLogPayload = {
