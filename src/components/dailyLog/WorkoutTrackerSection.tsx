@@ -115,7 +115,7 @@ const WorkoutTrackerSection = ({
         {/* Unified Workout Table */}
         <div className="space-y-4">
           {/* Column Headers */}
-          <div className="grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg">
+          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '60px 80px 1fr 80px' }}>
             <div>Sets</div>
             <div>Reps</div>
             <div>Exercise</div>
@@ -125,7 +125,7 @@ const WorkoutTrackerSection = ({
           {/* Exercise Rows */}
           <div className="space-y-3">
             {workouts.slice(0, 4).map((workout, index) => (
-              <div key={index} className="grid grid-cols-4 gap-4">
+              <div key={index} className="grid gap-4" style={{ gridTemplateColumns: '60px 80px 1fr 80px' }}>
                 <Select 
                   value={workout.sets} 
                   onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
