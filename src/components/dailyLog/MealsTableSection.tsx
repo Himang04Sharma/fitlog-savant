@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Apple, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -92,87 +91,11 @@ const MealsTableSection = ({
   return (
     <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
       <CardHeader className="pb-4 border-b border-gray-100">
-        <CardTitle className="flex items-center justify-between text-lg font-semibold text-gray-800">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Apple className="w-5 h-5 text-orange-600" />
-            </div>
-            Meals & Nutrition
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+          <div className="p-2 bg-orange-100 rounded-lg">
+            <Apple className="w-5 h-5 text-orange-600" />
           </div>
-          
-          <Dialog open={isGoalsDialogOpen} onOpenChange={setIsGoalsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
-                <Settings className="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Set Daily Nutrition Goals</DialogTitle>
-                <DialogDescription>
-                  Customize your daily nutrition targets to match your fitness goals.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="calories-goal" className="text-right text-sm font-medium">
-                    Calories
-                  </label>
-                  <Input
-                    id="calories-goal"
-                    type="number"
-                    value={tempTargets.calories}
-                    onChange={(e) => handleTargetChange('calories', e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="protein-goal" className="text-right text-sm font-medium">
-                    Protein (g)
-                  </label>
-                  <Input
-                    id="protein-goal"
-                    type="number"
-                    value={tempTargets.protein}
-                    onChange={(e) => handleTargetChange('protein', e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="carbs-goal" className="text-right text-sm font-medium">
-                    Carbs (g)
-                  </label>
-                  <Input
-                    id="carbs-goal"
-                    type="number"
-                    value={tempTargets.carbs}
-                    onChange={(e) => handleTargetChange('carbs', e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="fat-goal" className="text-right text-sm font-medium">
-                    Fat (g)
-                  </label>
-                  <Input
-                    id="fat-goal"
-                    type="number"
-                    value={tempTargets.fat}
-                    onChange={(e) => handleTargetChange('fat', e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={resetGoals}>
-                  Cancel
-                </Button>
-                <Button onClick={saveGoals}>
-                  Save Goals
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          Meals & Nutrition
         </CardTitle>
       </CardHeader>
       
@@ -197,9 +120,85 @@ const MealsTableSection = ({
 
         {/* Daily Nutrition Progress */}
         <div className="space-y-4 pt-4 border-t border-gray-100">
-          <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            📊 Daily Nutrition Progress
-          </h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+              📊 Daily Nutrition Progress
+            </h4>
+            
+            <Dialog open={isGoalsDialogOpen} onOpenChange={setIsGoalsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Set Daily Nutrition Goals</DialogTitle>
+                  <DialogDescription>
+                    Customize your daily nutrition targets to match your fitness goals.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="calories-goal" className="text-right text-sm font-medium">
+                      Calories
+                    </label>
+                    <Input
+                      id="calories-goal"
+                      type="number"
+                      value={tempTargets.calories}
+                      onChange={(e) => handleTargetChange('calories', e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="protein-goal" className="text-right text-sm font-medium">
+                      Protein (g)
+                    </label>
+                    <Input
+                      id="protein-goal"
+                      type="number"
+                      value={tempTargets.protein}
+                      onChange={(e) => handleTargetChange('protein', e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="carbs-goal" className="text-right text-sm font-medium">
+                      Carbs (g)
+                    </label>
+                    <Input
+                      id="carbs-goal"
+                      type="number"
+                      value={tempTargets.carbs}
+                      onChange={(e) => handleTargetChange('carbs', e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="fat-goal" className="text-right text-sm font-medium">
+                      Fat (g)
+                    </label>
+                    <Input
+                      id="fat-goal"
+                      type="number"
+                      value={tempTargets.fat}
+                      onChange={(e) => handleTargetChange('fat', e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={resetGoals}>
+                    Cancel
+                  </Button>
+                  <Button onClick={saveGoals}>
+                    Save Goals
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           
           <div className="space-y-4">
             {/* Calories Progress */}

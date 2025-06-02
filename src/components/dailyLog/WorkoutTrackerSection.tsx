@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dumbbell, Plus } from 'lucide-react';
+import { Dumbbell, Plus, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,6 +46,14 @@ const WorkoutTrackerSection = ({
 
   const addWorkoutRow = () => {
     const newWorkouts = [...workouts, { muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }];
+    onWorkoutsChange?.(newWorkouts);
+  };
+
+  const removeWorkoutRow = (index: number) => {
+    // Don't allow removing if there are only 4 rows or less
+    if (workouts.length <= 4) return;
+    
+    const newWorkouts = workouts.filter((_, i) => i !== index);
     onWorkoutsChange?.(newWorkouts);
   };
 
@@ -115,17 +123,18 @@ const WorkoutTrackerSection = ({
         {/* Unified Workout Table */}
         <div className="space-y-4">
           {/* Column Headers */}
-          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '60px 80px 1fr 80px' }}>
+          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '60px 80px 1fr 80px 30px' }}>
             <div>Sets</div>
             <div>Reps</div>
             <div>Exercise</div>
             <div>Weight</div>
+            <div></div>
           </div>
 
           {/* Exercise Rows */}
           <div className="space-y-3">
             {workouts.map((workout, index) => (
-              <div key={index} className="grid gap-4" style={{ gridTemplateColumns: '60px 80px 1fr 80px' }}>
+              <div key={index} className="grid gap-4 items-center" style={{ gridTemplateColumns: '60px 80px 1fr 80px 30px' }}>
                 <Select 
                   value={workout.sets} 
                   onValueChange={(value) => handleWorkoutChange(index, 'sets', value)}
@@ -171,6 +180,20 @@ const WorkoutTrackerSection = ({
                   placeholder="Weight"
                   className="h-10 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white"
                 />
+
+                {/* Delete Button - only show for rows beyond the first 4 */}
+                <div className="flex justify-center">
+                  {workouts.length > 4 && index >= 4 && (
+                    <Button
+                      onClick={() => removeWorkoutRow(index)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
