@@ -9,7 +9,7 @@ interface MealsFormSectionProps {
     dinner: string;
     snacks: string;
   };
-  onMealChange: (mealType: keyof typeof meals, value: string) => void;
+  onMealChange: (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snacks', value: string) => void;
 }
 
 const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
@@ -30,7 +30,7 @@ const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
           </label>
           <Input
             value={meals[key as keyof typeof meals]}
-            onChange={(e) => onMealChange(key as keyof typeof meals, e.target.value)}
+            onChange={(e) => onMealChange(key as 'breakfast' | 'lunch' | 'dinner' | 'snacks', e.target.value)}
             placeholder={`What did you have for ${label.toLowerCase()}?`}
             className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-300 bg-white transition-all"
           />

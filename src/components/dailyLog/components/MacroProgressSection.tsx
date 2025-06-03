@@ -16,7 +16,7 @@ interface MacroProgressSectionProps {
     carbs: number;
     fat: number;
   };
-  onMacroChange: (macroType: keyof typeof macros, value: string) => void;
+  onMacroChange: (macroType: 'calories' | 'protein' | 'carbs' | 'fat', value: string) => void;
 }
 
 const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProgressSectionProps) => {
@@ -42,7 +42,7 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
               <Input
                 type="number"
                 value={macros[key as keyof typeof macros]}
-                onChange={(e) => onMacroChange(key as keyof typeof macros, e.target.value)}
+                onChange={(e) => onMacroChange(key as 'calories' | 'protein' | 'carbs' | 'fat', e.target.value)}
                 placeholder="0"
                 className="w-20 h-7 text-xs border-gray-200 rounded bg-white"
               />

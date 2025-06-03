@@ -19,14 +19,19 @@ interface NutritionGoalsDialogProps {
     carbs: number;
     fat: number;
   };
-  onTargetsChange: (targets: typeof macroTargets) => void;
+  onTargetsChange: (targets: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
 }
 
 const NutritionGoalsDialog = ({ macroTargets, onTargetsChange }: NutritionGoalsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tempTargets, setTempTargets] = useState(macroTargets);
 
-  const handleTargetChange = (macroType: keyof typeof tempTargets, value: string) => {
+  const handleTargetChange = (macroType: 'calories' | 'protein' | 'carbs' | 'fat', value: string) => {
     setTempTargets({ ...tempTargets, [macroType]: parseInt(value) || 0 });
   };
 
