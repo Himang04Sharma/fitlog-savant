@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Dumbbell } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -125,94 +124,130 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-background to-muted/30 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">FitLog</CardTitle>
-          <CardDescription className="text-center">
-            Sign in or create an account to track your fitness journey
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-green-100 p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 via-transparent to-blue-100/20"></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-200/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-200/10 rounded-full blur-3xl"></div>
+      
+      <Card className="w-full max-w-md relative z-10 shadow-2xl shadow-green-100/50 border-0 bg-white/95 backdrop-blur-sm">
+        <CardHeader className="space-y-3 text-center pb-6">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
+              <Dumbbell className="h-6 w-6 text-white" />
+            </div>
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent tracking-tight">
+              FitLog
+            </CardTitle>
+          </div>
+          <CardDescription className="text-base text-gray-600 font-medium">
+            Track your fitness journey with ease
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        
+        <CardContent className="pb-6">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6 p-1 bg-gray-100 rounded-xl h-12">
+              <TabsTrigger 
+                value="login" 
+                className="rounded-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-green-200 text-gray-600 hover:text-gray-800"
+              >
+                Login
+              </TabsTrigger>
+              <TabsTrigger 
+                value="register" 
+                className="rounded-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-green-200 text-gray-600 hover:text-gray-800"
+              >
+                Register
+              </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="login">
-              <form onSubmit={handleSignIn} className="space-y-4">
+            <TabsContent value="login" className="mt-0">
+              <form onSubmit={handleSignIn} className="space-y-5">
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-emerald-500 transition-colors duration-200" />
                     <Input
                       type="email"
-                      placeholder="Email"
+                      placeholder="Email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
+                      className="pl-12 h-12 border-gray-200 rounded-xl transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:shadow-lg focus:shadow-emerald-100/50 hover:border-gray-300 bg-white/80"
                       disabled={loading}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-emerald-500 transition-colors duration-200" />
                     <Input
                       type="password"
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-12 h-12 border-gray-200 rounded-xl transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:shadow-lg focus:shadow-emerald-100/50 hover:border-gray-300 bg-white/80"
                       disabled={loading}
                     />
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"} 
-                  {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-300/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
+                  disabled={loading}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    {loading ? "Logging in..." : "Login"} 
+                    {!loading && <ArrowRight className="h-5 w-5" />}
+                  </span>
                 </Button>
               </form>
             </TabsContent>
             
-            <TabsContent value="register">
-              <form onSubmit={handleSignUp} className="space-y-4">
+            <TabsContent value="register" className="mt-0">
+              <form onSubmit={handleSignUp} className="space-y-5">
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-emerald-500 transition-colors duration-200" />
                     <Input
                       type="email"
-                      placeholder="Email"
+                      placeholder="Email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
+                      className="pl-12 h-12 border-gray-200 rounded-xl transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:shadow-lg focus:shadow-emerald-100/50 hover:border-gray-300 bg-white/80"
                       disabled={loading}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-emerald-500 transition-colors duration-200" />
                     <Input
                       type="password"
                       placeholder="Password (min 6 characters)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-12 h-12 border-gray-200 rounded-xl transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:shadow-lg focus:shadow-emerald-100/50 hover:border-gray-300 bg-white/80"
                       disabled={loading}
                     />
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating account..." : "Create account"}
-                  {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-300/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
+                  disabled={loading}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    {loading ? "Creating account..." : "Create account"}
+                    {!loading && <ArrowRight className="h-5 w-5" />}
+                  </span>
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex flex-col">
-          <p className="mt-2 text-xs text-center text-muted-foreground">
+        
+        <CardFooter className="flex flex-col pt-4 border-t border-gray-100">
+          <p className="text-sm text-center text-gray-500 leading-relaxed">
             By continuing, you agree to our Terms of Service and Privacy Policy.
           </p>
         </CardFooter>
