@@ -59,6 +59,9 @@ const Auth = () => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm`
+        }
       });
 
       if (error) throw error;
@@ -66,7 +69,7 @@ const Auth = () => {
       if (data.user) {
         toast({
           title: "Success",
-          description: "Account created successfully! Please verify your email if required.",
+          description: "Account created successfully! Please check your email to confirm your account.",
         });
       }
     } catch (error: any) {
