@@ -36,7 +36,7 @@ const WorkoutExerciseRow = ({
   const repsOptions = ['8-10', '10-12', '12-15'];
 
   return (
-    <div className="grid gap-4 items-center" style={{ gridTemplateColumns: '50px 70px 1fr 60px 30px' }}>
+    <div className="grid gap-4 items-center" style={{ gridTemplateColumns: '50px 90px 1fr 60px 30px' }}>
       <Select 
         value={workout.sets} 
         onValueChange={(value) => onWorkoutChange(index, 'sets', value)}

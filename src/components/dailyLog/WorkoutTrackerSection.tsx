@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dumbbell, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -66,7 +65,7 @@ const WorkoutTrackerSection = ({
         />
 
         <div className="space-y-4">
-          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '50px 70px 1fr 60px 30px' }}>
+          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '50px 90px 1fr 60px 30px' }}>
             <div>Sets</div>
             <div>Reps</div>
             <div>Exercise</div>
