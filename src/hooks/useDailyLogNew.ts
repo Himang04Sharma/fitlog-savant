@@ -28,6 +28,11 @@ interface DailyLogData {
     exercise: string;
     weight: string;
   }[];
+  muscleGroups: {
+    muscleGroup1: string;
+    muscleGroup2: string;
+    muscleGroup3: string;
+  };
 }
 
 interface UseDailyLogNewProps {
@@ -64,7 +69,12 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
       reps: '',
       exercise: '',
       weight: ''
-    })
+    }),
+    muscleGroups: {
+      muscleGroup1: '',
+      muscleGroup2: '',
+      muscleGroup3: ''
+    }
   });
 
   const resetState = () => {
@@ -91,7 +101,12 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         reps: '',
         exercise: '',
         weight: ''
-      })
+      }),
+      muscleGroups: {
+        muscleGroup1: '',
+        muscleGroup2: '',
+        muscleGroup3: ''
+      }
     });
   };
 
@@ -139,6 +154,13 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
             weight: ''
           };
         });
+
+        // Extract muscle groups from the custom field or derive from workouts
+        const muscleGroups = dailyLog.muscle_groups || {
+          muscleGroup1: '',
+          muscleGroup2: '',
+          muscleGroup3: ''
+        };
         
         setDailyLogData({
           goals: dailyLog.goals || [''],
@@ -157,7 +179,8 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
             carbs: dailyLog.macros_carbs?.toString() || '',
             fat: dailyLog.macros_fat?.toString() || ''
           },
-          workouts: workoutData
+          workouts: workoutData,
+          muscleGroups: muscleGroups
         });
         
         console.log('Fetched daily log data:', dailyLog);
@@ -191,8 +214,9 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
     try {
       console.log('Saving daily log data for date:', dateString);
       console.log('Current workouts data:', dailyLogData.workouts);
+      console.log('Current muscle groups:', dailyLogData.muscleGroups);
       
-      // Prepare daily log data
+      // Prepare daily log data including muscle groups
       const dailyLogPayload = {
         user_id: user.id,
         log_date: dateString,
@@ -207,7 +231,8 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         macros_calories: dailyLogData.macros.calories ? parseInt(dailyLogData.macros.calories) : null,
         macros_protein: dailyLogData.macros.protein ? parseInt(dailyLogData.macros.protein) : null,
         macros_carbs: dailyLogData.macros.carbs ? parseInt(dailyLogData.macros.carbs) : null,
-        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null
+        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null,
+        muscle_groups: dailyLogData.muscleGroups
       };
       
       // Use upsert with proper conflict resolution

@@ -25,6 +25,15 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
     return Math.min((currentValue / target) * 100, 100);
   };
 
+  const handleMacroChange = (macroType: 'calories' | 'protein' | 'carbs' | 'fat', value: string) => {
+    // Prevent negative values
+    const numericValue = parseFloat(value);
+    if (value !== '' && (isNaN(numericValue) || numericValue < 0)) {
+      return; // Don't update if value is negative or invalid
+    }
+    onMacroChange(macroType, value);
+  };
+
   const macroData = [
     { key: 'calories', label: 'Calories', color: 'blue', unit: '' },
     { key: 'protein', label: 'Protein (g)', color: 'green', unit: 'g' },
@@ -41,8 +50,10 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
               <label className="text-sm font-medium text-gray-700">{label}</label>
               <Input
                 type="number"
+                min="0"
+                step="0.1"
                 value={macros[key as keyof typeof macros]}
-                onChange={(e) => onMacroChange(key as 'calories' | 'protein' | 'carbs' | 'fat', e.target.value)}
+                onChange={(e) => handleMacroChange(key as 'calories' | 'protein' | 'carbs' | 'fat', e.target.value)}
                 placeholder="0"
                 className="w-20 h-7 text-xs border-gray-200 rounded bg-white"
               />

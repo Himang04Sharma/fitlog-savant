@@ -20,6 +20,11 @@ const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
     { key: 'snacks', label: 'Snacks', icon: '🍎' }
   ];
 
+  const handleMealChange = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snacks', value: string) => {
+    // Allow any text input for meal descriptions - no numeric validation needed
+    onMealChange(mealType, value);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {mealTypes.map(({ key, label, icon }) => (
@@ -30,7 +35,7 @@ const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
           </label>
           <Input
             value={meals[key as keyof typeof meals]}
-            onChange={(e) => onMealChange(key as 'breakfast' | 'lunch' | 'dinner' | 'snacks', e.target.value)}
+            onChange={(e) => handleMealChange(key as 'breakfast' | 'lunch' | 'dinner' | 'snacks', e.target.value)}
             placeholder={`What did you have for ${label.toLowerCase()}?`}
             className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-300 bg-white transition-all"
           />

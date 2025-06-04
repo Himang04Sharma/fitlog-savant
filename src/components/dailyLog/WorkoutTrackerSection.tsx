@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Dumbbell, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,16 +15,36 @@ interface WorkoutTrackerSectionProps {
     exercise: string;
     weight: string;
   }[];
+  muscleGroups?: {
+    muscleGroup1: string;
+    muscleGroup2: string;
+    muscleGroup3: string;
+  };
   onWorkoutsChange?: (workouts: any[]) => void;
+  onMuscleGroupsChange?: (muscleGroups: any) => void;
 }
 
 const WorkoutTrackerSection = ({
   workouts = Array(4).fill({ muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }),
-  onWorkoutsChange
+  muscleGroups = { muscleGroup1: '', muscleGroup2: '', muscleGroup3: '' },
+  onWorkoutsChange,
+  onMuscleGroupsChange
 }: WorkoutTrackerSectionProps) => {
-  const [muscleGroup1, setMuscleGroup1] = useState('');
-  const [muscleGroup2, setMuscleGroup2] = useState('');
-  const [muscleGroup3, setMuscleGroup3] = useState('');
+  const [localMuscleGroups, setLocalMuscleGroups] = useState(muscleGroups);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalMuscleGroups(muscleGroups);
+  }, [muscleGroups]);
+
+  const handleMuscleGroupChange = (groupNumber: 1 | 2 | 3, value: string) => {
+    const updatedGroups = {
+      ...localMuscleGroups,
+      [`muscleGroup${groupNumber}`]: value
+    };
+    setLocalMuscleGroups(updatedGroups);
+    onMuscleGroupsChange?.(updatedGroups);
+  };
 
   const handleWorkoutChange = (index: number, field: string, value: string) => {
     const newWorkouts = [...workouts];
@@ -56,12 +77,12 @@ const WorkoutTrackerSection = ({
       
       <CardContent className="p-6">
         <WorkoutMuscleGroupSelector
-          muscleGroup1={muscleGroup1}
-          muscleGroup2={muscleGroup2}
-          muscleGroup3={muscleGroup3}
-          onMuscleGroup1Change={setMuscleGroup1}
-          onMuscleGroup2Change={setMuscleGroup2}
-          onMuscleGroup3Change={setMuscleGroup3}
+          muscleGroup1={localMuscleGroups.muscleGroup1}
+          muscleGroup2={localMuscleGroups.muscleGroup2}
+          muscleGroup3={localMuscleGroups.muscleGroup3}
+          onMuscleGroup1Change={(value) => handleMuscleGroupChange(1, value)}
+          onMuscleGroup2Change={(value) => handleMuscleGroupChange(2, value)}
+          onMuscleGroup3Change={(value) => handleMuscleGroupChange(3, value)}
         />
 
         <div className="space-y-4">

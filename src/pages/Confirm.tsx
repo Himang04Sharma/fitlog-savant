@@ -16,31 +16,71 @@ const Confirm = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        console.log('Starting email confirmation process...');
+        console.log('Search params:', Object.fromEntries(searchParams.entries()));
+        
+        // Check if this is an email confirmation URL
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
+        const access_token = searchParams.get('access_token');
+        const refresh_token = searchParams.get('refresh_token');
 
-        if (!token_hash || !type) {
-          setStatus('error');
-          setMessage('Invalid confirmation link. Please try signing up again.');
+        console.log('Token hash:', token_hash);
+        console.log('Type:', type);
+        console.log('Access token present:', !!access_token);
+        console.log('Refresh token present:', !!refresh_token);
+
+        // If we have access and refresh tokens, set the session directly
+        if (access_token && refresh_token) {
+          console.log('Setting session with tokens...');
+          const { data, error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token
+          });
+
+          if (error) {
+            console.error('Session error:', error);
+            setStatus('error');
+            setMessage('Failed to confirm your email. Please try signing up again.');
+          } else if (data.user) {
+            console.log('Session set successfully:', data.user);
+            setStatus('success');
+            setMessage('Your email has been confirmed successfully!');
+          } else {
+            setStatus('error');
+            setMessage('Confirmation failed. Please try again.');
+          }
           return;
         }
 
-        const { data, error } = await supabase.auth.verifyOtp({
-          token_hash,
-          type: type as any,
-        });
+        // Fallback to token hash verification if available
+        if (token_hash && type) {
+          console.log('Using token hash verification...');
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: type as any,
+          });
 
-        if (error) {
-          console.error('Confirmation error:', error);
-          setStatus('error');
-          setMessage('Failed to confirm your email. The link may have expired or already been used.');
-        } else if (data.user) {
-          setStatus('success');
-          setMessage('Your email has been confirmed successfully!');
-        } else {
-          setStatus('error');
-          setMessage('Confirmation failed. Please try again.');
+          if (error) {
+            console.error('OTP verification error:', error);
+            setStatus('error');
+            setMessage('The confirmation link has expired or is invalid. Please try signing up again.');
+          } else if (data.user) {
+            console.log('OTP verification successful:', data.user);
+            setStatus('success');
+            setMessage('Your email has been confirmed successfully!');
+          } else {
+            setStatus('error');
+            setMessage('Confirmation failed. Please try again.');
+          }
+          return;
         }
+
+        // If no relevant parameters found
+        console.log('No confirmation parameters found');
+        setStatus('error');
+        setMessage('Invalid confirmation link. Please check your email and try again.');
+
       } catch (error) {
         console.error('Unexpected error during confirmation:', error);
         setStatus('error');
