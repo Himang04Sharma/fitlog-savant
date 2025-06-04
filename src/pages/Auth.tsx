@@ -95,11 +95,15 @@ const Auth = () => {
     try {
       setLoading(true);
       
+      // Use the current origin for email redirect
+      const redirectTo = `${window.location.origin}/confirm`;
+      console.log('Email redirect URL:', redirectTo);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/confirm`
+          emailRedirectTo: redirectTo
         }
       });
 
@@ -112,6 +116,7 @@ const Auth = () => {
         });
       }
     } catch (error: any) {
+      console.error('Sign up error:', error);
       toast({
         title: "Error",
         description: error.message || "Something went wrong",
@@ -136,6 +141,7 @@ const Auth = () => {
     
     try {
       setLoading(true);
+      console.log('Attempting sign in...');
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -143,6 +149,8 @@ const Auth = () => {
       });
 
       if (error) throw error;
+      
+      console.log('Sign in successful:', data);
       
       if (data.user) {
         toast({
@@ -153,6 +161,7 @@ const Auth = () => {
         navigate('/');
       }
     } catch (error: any) {
+      console.error('Sign in error:', error);
       toast({
         title: "Error",
         description: error.message || "Invalid email or password",
@@ -174,8 +183,11 @@ const Auth = () => {
     }
 
     try {
+      const redirectTo = `${window.location.origin}/auth`;
+      console.log('Password reset redirect URL:', redirectTo);
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
+        redirectTo: redirectTo,
       });
 
       if (error) throw error;
@@ -185,6 +197,7 @@ const Auth = () => {
         description: "Password reset email sent! Check your inbox.",
       });
     } catch (error: any) {
+      console.error('Password reset error:', error);
       toast({
         title: "Error",
         description: error.message || "Failed to send reset email",
