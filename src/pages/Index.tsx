@@ -16,7 +16,7 @@ const Index = () => {
                   FitLog Savant
                 </h1>
                 <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                  Track your fitness journey with AI-powered insights
+                  Build strength, eat smart, stay consistent.
                 </p>
               </div>
               <div className="flex items-center">

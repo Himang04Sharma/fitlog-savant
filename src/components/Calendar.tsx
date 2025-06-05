@@ -366,39 +366,36 @@ const Calendar = () => {
   return (
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-heading text-3xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-          FitLog Savant
-        </h2>
-        <div className="flex items-center gap-4">
-          {workoutStreak > 0 && (
-            <div className="flex items-center gap-2 text-lg font-medium">
-              <span>🔥</span>
-              <span style={{ color: 'var(--text-primary)' }}>
-                Current Streak: <span style={{ color: 'var(--accent-green)' }}>{workoutStreak}</span> days
-              </span>
-            </div>
-          )}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchData}
-            className="border-custom transition-all duration-200"
-            style={{ 
-              borderColor: 'var(--border-color)',
-              color: 'var(--text-primary)',
-              backgroundColor: 'var(--bg-card)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--bg-card)';
-            }}
-          >
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            Refresh Calendar
-          </Button>
-        </div>
+        {workoutStreak > 0 ? (
+          <div className="flex items-center gap-2 text-lg font-medium">
+            <span>🔥</span>
+            <span style={{ color: 'var(--text-primary)' }}>
+              Current Streak: <span style={{ color: 'var(--accent-green)' }}>{workoutStreak}</span> days
+            </span>
+          </div>
+        ) : (
+          <div></div>
+        )}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={fetchData}
+          className="border-custom transition-all duration-200"
+          style={{ 
+            borderColor: 'var(--border-color)',
+            color: 'var(--text-primary)',
+            backgroundColor: 'var(--bg-card)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--bg-card)';
+          }}
+        >
+          <CalendarIcon className="h-4 w-4 mr-2" />
+          Refresh Calendar
+        </Button>
       </div>
 
       {loading ? (
