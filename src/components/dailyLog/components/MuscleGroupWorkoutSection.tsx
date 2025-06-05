@@ -57,6 +57,11 @@ const MuscleGroupWorkoutSection = ({ muscleGroup, exercises, onExercisesChange }
     updateExercise(index, updatedExercise);
   };
 
+  const handleWorkoutChange = (index: number, field: string, value: string) => {
+    const updatedExercise = { ...exercises[index], [field]: value };
+    updateExercise(index, updatedExercise);
+  };
+
   return (
     <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
       <CardHeader className="pb-3 border-b border-gray-100">
@@ -100,10 +105,17 @@ const MuscleGroupWorkoutSection = ({ muscleGroup, exercises, onExercisesChange }
             {exercises.map((exercise, index) => (
               <WorkoutExerciseRow
                 key={index}
-                exercise={exercise}
-                onExerciseChange={(updatedExercise) => updateExercise(index, updatedExercise)}
-                onRemove={() => removeExercise(index)}
-                canRemove={exercises.length > 1}
+                workout={{
+                  muscleGroup: muscleGroup,
+                  sets: exercise.sets,
+                  reps: exercise.reps,
+                  exercise: exercise.exercise,
+                  weight: exercise.weight
+                }}
+                index={index}
+                canDelete={exercises.length > 1}
+                onWorkoutChange={handleWorkoutChange}
+                onRemoveRow={() => removeExercise(index)}
               />
             ))}
           </>
