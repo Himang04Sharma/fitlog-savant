@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Save, LogIn } from 'lucide-react';
@@ -87,7 +86,11 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
         <div className="lg:col-span-3 space-y-6">
           <WorkoutTrackerSection
             workouts={dailyLogData.workouts}
+            muscleGroupsTrained={dailyLogData.muscleGroupsTrained}
             onWorkoutsChange={(workouts) => setDailyLogData(prev => ({ ...prev, workouts }))}
+            onMuscleGroupsTrainedChange={(muscleGroupsTrained) => 
+              setDailyLogData(prev => ({ ...prev, muscleGroupsTrained }))
+            }
           />
           
           <MealsTableSection

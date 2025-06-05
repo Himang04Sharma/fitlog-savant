@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useToast } from "@/hooks/use-toast";
@@ -28,11 +27,7 @@ interface DailyLogData {
     exercise: string;
     weight: string;
   }[];
-  muscleGroups: {
-    muscleGroup1: string;
-    muscleGroup2: string;
-    muscleGroup3: string;
-  };
+  muscleGroupsTrained: string[];
 }
 
 interface UseDailyLogNewProps {
@@ -70,11 +65,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
       exercise: '',
       weight: ''
     }),
-    muscleGroups: {
-      muscleGroup1: '',
-      muscleGroup2: '',
-      muscleGroup3: ''
-    }
+    muscleGroupsTrained: []
   });
 
   const resetState = () => {
@@ -102,11 +93,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         exercise: '',
         weight: ''
       }),
-      muscleGroups: {
-        muscleGroup1: '',
-        muscleGroup2: '',
-        muscleGroup3: ''
-      }
+      muscleGroupsTrained: []
     });
   };
 
@@ -137,31 +124,18 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
           
         if (workoutsError) throw workoutsError;
         
-        // Convert workouts to the format expected by the UI - ensure minimum 4 rows
-        const workoutData = Array(Math.max(4, workouts?.length || 4)).fill(null).map((_, index) => {
-          const workout = workouts?.[index];
-          return workout ? {
-            muscleGroup: workout.muscle_group || '',
-            sets: workout.sets?.toString() || '',
-            reps: workout.reps || '',
-            exercise: workout.exercise_name || '',
-            weight: workout.weight?.toString() || ''
-          } : {
-            muscleGroup: '',
-            sets: '',
-            reps: '',
-            exercise: '',
-            weight: ''
-          };
-        });
+        // Convert workouts to the format expected by the UI
+        const workoutData = workouts?.map(workout => ({
+          muscleGroup: workout.muscle_group || '',
+          sets: workout.sets?.toString() || '',
+          reps: workout.reps || '',
+          exercise: workout.exercise_name || '',
+          weight: workout.weight?.toString() || ''
+        })) || [];
 
-        // Extract muscle groups from workouts data - get unique muscle groups
-        const uniqueMuscleGroups = [...new Set(workouts?.map(w => w.muscle_group).filter(Boolean) || [])];
-        const muscleGroups = {
-          muscleGroup1: uniqueMuscleGroups[0] || '',
-          muscleGroup2: uniqueMuscleGroups[1] || '',
-          muscleGroup3: uniqueMuscleGroups[2] || ''
-        };
+        // Get muscle groups trained from the daily log or derive from workouts
+        const muscleGroupsTrained = dailyLog.muscle_groups_trained || 
+          [...new Set(workouts?.map(w => w.muscle_group).filter(Boolean) || [])];
         
         setDailyLogData({
           goals: dailyLog.goals || [''],
@@ -181,7 +155,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
             fat: dailyLog.macros_fat?.toString() || ''
           },
           workouts: workoutData,
-          muscleGroups: muscleGroups
+          muscleGroupsTrained: muscleGroupsTrained
         });
         
         console.log('Fetched daily log data:', dailyLog);
@@ -215,9 +189,9 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
     try {
       console.log('Saving daily log data for date:', dateString);
       console.log('Current workouts data:', dailyLogData.workouts);
-      console.log('Current muscle groups:', dailyLogData.muscleGroups);
+      console.log('Current muscle groups trained:', dailyLogData.muscleGroupsTrained);
       
-      // Prepare daily log data - only include fields that exist in the database
+      // Prepare daily log data including muscle groups trained
       const dailyLogPayload = {
         user_id: user.id,
         log_date: dateString,
@@ -232,7 +206,8 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         macros_calories: dailyLogData.macros.calories ? parseInt(dailyLogData.macros.calories) : null,
         macros_protein: dailyLogData.macros.protein ? parseInt(dailyLogData.macros.protein) : null,
         macros_carbs: dailyLogData.macros.carbs ? parseInt(dailyLogData.macros.carbs) : null,
-        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null
+        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null,
+        muscle_groups_trained: dailyLogData.muscleGroupsTrained.length > 0 ? dailyLogData.muscleGroupsTrained : null
       };
       
       // Use upsert with proper conflict resolution

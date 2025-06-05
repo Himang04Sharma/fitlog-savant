@@ -1,11 +1,20 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dumbbell, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Dumbbell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import WorkoutMuscleGroupSelector from './components/WorkoutMuscleGroupSelector';
-import WorkoutExerciseRow from './components/WorkoutExerciseRow';
-import WorkoutSummaryStats from './components/WorkoutSummaryStats';
+import MuscleGroupMultiSelect from './components/MuscleGroupMultiSelect';
+import MuscleGroupWorkoutSection from './components/MuscleGroupWorkoutSection';
+
+interface Exercise {
+  sets: string;
+  reps: string;
+  exercise: string;
+  weight: string;
+}
+
+interface WorkoutData {
+  [muscleGroup: string]: Exercise[];
+}
 
 interface WorkoutTrackerSectionProps {
   workouts?: {
@@ -15,53 +24,102 @@ interface WorkoutTrackerSectionProps {
     exercise: string;
     weight: string;
   }[];
-  muscleGroups?: {
-    muscleGroup1: string;
-    muscleGroup2: string;
-    muscleGroup3: string;
-  };
+  muscleGroupsTrained?: string[];
   onWorkoutsChange?: (workouts: any[]) => void;
-  onMuscleGroupsChange?: (muscleGroups: any) => void;
+  onMuscleGroupsTrainedChange?: (groups: string[]) => void;
 }
 
 const WorkoutTrackerSection = ({
-  workouts = Array(4).fill({ muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }),
-  muscleGroups = { muscleGroup1: '', muscleGroup2: '', muscleGroup3: '' },
+  workouts = [],
+  muscleGroupsTrained = [],
   onWorkoutsChange,
-  onMuscleGroupsChange
+  onMuscleGroupsTrainedChange
 }: WorkoutTrackerSectionProps) => {
-  const [localMuscleGroups, setLocalMuscleGroups] = useState(muscleGroups);
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>(muscleGroupsTrained);
+  const [workoutData, setWorkoutData] = useState<WorkoutData>({});
 
-  // Update local state when props change
+  // Initialize workout data from props
   useEffect(() => {
-    setLocalMuscleGroups(muscleGroups);
-  }, [muscleGroups]);
-
-  const handleMuscleGroupChange = (groupNumber: 1 | 2 | 3, value: string) => {
-    const updatedGroups = {
-      ...localMuscleGroups,
-      [`muscleGroup${groupNumber}`]: value
-    };
-    setLocalMuscleGroups(updatedGroups);
-    onMuscleGroupsChange?.(updatedGroups);
-  };
-
-  const handleWorkoutChange = (index: number, field: string, value: string) => {
-    const newWorkouts = [...workouts];
-    newWorkouts[index] = { ...newWorkouts[index], [field]: value };
-    onWorkoutsChange?.(newWorkouts);
-  };
-
-  const addWorkoutRow = () => {
-    const newWorkouts = [...workouts, { muscleGroup: '', sets: '', reps: '', exercise: '', weight: '' }];
-    onWorkoutsChange?.(newWorkouts);
-  };
-
-  const removeWorkoutRow = (index: number) => {
-    if (workouts.length <= 4) return;
+    const groupedWorkouts: WorkoutData = {};
     
-    const newWorkouts = workouts.filter((_, i) => i !== index);
-    onWorkoutsChange?.(newWorkouts);
+    // Group existing workouts by muscle group
+    workouts.forEach(workout => {
+      if (workout.muscleGroup) {
+        if (!groupedWorkouts[workout.muscleGroup]) {
+          groupedWorkouts[workout.muscleGroup] = [];
+        }
+        groupedWorkouts[workout.muscleGroup].push({
+          sets: workout.sets,
+          reps: workout.reps,
+          exercise: workout.exercise,
+          weight: workout.weight
+        });
+      }
+    });
+
+    // Ensure each selected muscle group has at least one empty exercise
+    selectedMuscleGroups.forEach(group => {
+      if (!groupedWorkouts[group] || groupedWorkouts[group].length === 0) {
+        groupedWorkouts[group] = [{ sets: '', reps: '', exercise: '', weight: '' }];
+      }
+    });
+
+    setWorkoutData(groupedWorkouts);
+  }, [workouts, selectedMuscleGroups]);
+
+  // Update selected muscle groups from props
+  useEffect(() => {
+    setSelectedMuscleGroups(muscleGroupsTrained);
+  }, [muscleGroupsTrained]);
+
+  const handleMuscleGroupsChange = (groups: string[]) => {
+    setSelectedMuscleGroups(groups);
+    onMuscleGroupsTrainedChange?.(groups);
+
+    // Initialize empty exercises for new muscle groups
+    const newWorkoutData = { ...workoutData };
+    groups.forEach(group => {
+      if (!newWorkoutData[group]) {
+        newWorkoutData[group] = [{ sets: '', reps: '', exercise: '', weight: '' }];
+      }
+    });
+
+    // Remove data for unselected muscle groups
+    Object.keys(newWorkoutData).forEach(group => {
+      if (!groups.includes(group)) {
+        delete newWorkoutData[group];
+      }
+    });
+
+    setWorkoutData(newWorkoutData);
+    updateWorkoutsFromData(newWorkoutData);
+  };
+
+  const handleExercisesChange = (muscleGroup: string, exercises: Exercise[]) => {
+    const updatedData = {
+      ...workoutData,
+      [muscleGroup]: exercises
+    };
+    setWorkoutData(updatedData);
+    updateWorkoutsFromData(updatedData);
+  };
+
+  const updateWorkoutsFromData = (data: WorkoutData) => {
+    const flatWorkouts: any[] = [];
+    
+    Object.entries(data).forEach(([muscleGroup, exercises]) => {
+      exercises.forEach(exercise => {
+        flatWorkouts.push({
+          muscleGroup,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          exercise: exercise.exercise,
+          weight: exercise.weight
+        });
+      });
+    });
+
+    onWorkoutsChange?.(flatWorkouts);
   };
 
   return (
@@ -75,52 +133,31 @@ const WorkoutTrackerSection = ({
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="p-6">
-        <WorkoutMuscleGroupSelector
-          muscleGroup1={localMuscleGroups.muscleGroup1}
-          muscleGroup2={localMuscleGroups.muscleGroup2}
-          muscleGroup3={localMuscleGroups.muscleGroup3}
-          onMuscleGroup1Change={(value) => handleMuscleGroupChange(1, value)}
-          onMuscleGroup2Change={(value) => handleMuscleGroupChange(2, value)}
-          onMuscleGroup3Change={(value) => handleMuscleGroupChange(3, value)}
+      <CardContent className="p-6 space-y-6">
+        <MuscleGroupMultiSelect
+          selectedMuscleGroups={selectedMuscleGroups}
+          onMuscleGroupsChange={handleMuscleGroupsChange}
         />
 
-        <div className="space-y-4">
-          <div className="grid gap-4 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg" style={{ gridTemplateColumns: '50px 90px 1fr 60px 30px' }}>
-            <div>Sets</div>
-            <div>Reps</div>
-            <div>Exercise</div>
-            <div>Weight</div>
-            <div></div>
-          </div>
-
-          <div className="space-y-3">
-            {workouts.map((workout, index) => (
-              <WorkoutExerciseRow
-                key={index}
-                workout={workout}
-                index={index}
-                canDelete={workouts.length > 4 && index >= 4}
-                onWorkoutChange={handleWorkoutChange}
-                onRemoveRow={removeWorkoutRow}
+        {selectedMuscleGroups.length > 0 && (
+          <div className="space-y-4">
+            {selectedMuscleGroups.map((muscleGroup) => (
+              <MuscleGroupWorkoutSection
+                key={muscleGroup}
+                muscleGroup={muscleGroup}
+                exercises={workoutData[muscleGroup] || []}
+                onExercisesChange={(exercises) => handleExercisesChange(muscleGroup, exercises)}
               />
             ))}
           </div>
-        </div>
+        )}
 
-        <div className="flex justify-center mt-6 pt-4 border-t border-gray-100">
-          <Button
-            onClick={addWorkoutRow}
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-teal-600 hover:bg-teal-50 hover:text-teal-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Exercise
-          </Button>
-        </div>
-
-        <WorkoutSummaryStats workouts={workouts} />
+        {selectedMuscleGroups.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <Dumbbell className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p>Select muscle groups to start logging your workout</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

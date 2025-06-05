@@ -22,6 +22,7 @@ export type Database = {
           macros_carbs: number | null
           macros_fat: number | null
           macros_protein: number | null
+          muscle_groups_trained: string[] | null
           snacks: string | null
           steps: number | null
           updated_at: string | null
@@ -41,6 +42,7 @@ export type Database = {
           macros_carbs?: number | null
           macros_fat?: number | null
           macros_protein?: number | null
+          muscle_groups_trained?: string[] | null
           snacks?: string | null
           steps?: number | null
           updated_at?: string | null
@@ -60,6 +62,7 @@ export type Database = {
           macros_carbs?: number | null
           macros_fat?: number | null
           macros_protein?: number | null
+          muscle_groups_trained?: string[] | null
           snacks?: string | null
           steps?: number | null
           updated_at?: string | null
