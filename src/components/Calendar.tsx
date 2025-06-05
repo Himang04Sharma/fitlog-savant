@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -266,18 +265,28 @@ const Calendar = () => {
     const stats = getMonthlyStats(monthIndex);
 
     return (
-      <Card className="p-4 animate-fadeIn" key={`${currentYear}-${monthIndex}`}>
+      <Card 
+        className="p-4 animate-fadeIn transition-all duration-300 border-custom hover:shadow-lg" 
+        key={`${currentYear}-${monthIndex}`}
+        style={{ 
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-color)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="font-heading text-xl font-semibold text-primary">{months[monthIndex]} {currentYear}</h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <h3 className="font-heading text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+              {months[monthIndex]} {currentYear}
+            </h3>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
               {stats.workoutDays} workouts • {stats.restDays} rest days
             </p>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-2 mb-3">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-xs font-medium text-muted-foreground">
+            <div key={day} className="text-center text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
               {day}
             </div>
           ))}
@@ -297,17 +306,38 @@ const Calendar = () => {
                 key={day}
                 variant="ghost"
                 onClick={() => handleDateClick(day, monthIndex)}
-                className={`h-8 p-0 text-sm relative ${
+                className={`h-8 p-0 text-sm relative transition-all duration-200 ${
                   isWorkout && isMeal
-                    ? 'bg-gradient-to-br from-green-200 to-blue-200 hover:from-green-300 hover:to-blue-300'
+                    ? 'text-white'
                     : isWorkout
-                    ? 'bg-green-200 hover:bg-green-300'
+                    ? 'text-white'
                     : isMeal
-                    ? 'bg-blue-200 hover:bg-blue-300'
+                    ? 'text-white'
                     : ''
                 } ${
-                  isTodayDate ? 'border-2 border-green-500 border-solid rounded-md' : ''
+                  isTodayDate ? 'border-2 border-solid rounded-md' : ''
                 }`}
+                style={{
+                  backgroundColor: isWorkout && isMeal
+                    ? 'var(--accent-green)'
+                    : isWorkout
+                    ? 'var(--accent-green)'
+                    : isMeal
+                    ? 'var(--accent-green)'
+                    : 'transparent',
+                  borderColor: isTodayDate ? 'var(--today-highlight)' : 'transparent',
+                  color: (isWorkout || isMeal) ? '#FFFFFF' : 'var(--text-primary)'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isWorkout && !isMeal) {
+                    e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isWorkout && !isMeal) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 {day}
               </Button>
@@ -336,15 +366,35 @@ const Calendar = () => {
   return (
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-heading text-3xl font-semibold text-primary">FitLog Savant</h2>
+        <h2 className="font-heading text-3xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+          FitLog Savant
+        </h2>
         <div className="flex items-center gap-4">
           {workoutStreak > 0 && (
             <div className="flex items-center gap-2 text-lg font-medium">
               <span>🔥</span>
-              <span>Current Streak: <span className="text-green-600">{workoutStreak}</span> days</span>
+              <span style={{ color: 'var(--text-primary)' }}>
+                Current Streak: <span style={{ color: 'var(--accent-green)' }}>{workoutStreak}</span> days
+              </span>
             </div>
           )}
-          <Button variant="outline" size="sm" onClick={fetchData}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={fetchData}
+            className="border-custom transition-all duration-200"
+            style={{ 
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--bg-card)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--bg-card)';
+            }}
+          >
             <CalendarIcon className="h-4 w-4 mr-2" />
             Refresh Calendar
           </Button>
@@ -353,7 +403,9 @@ const Calendar = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-pulse text-muted-foreground">Loading your fitness data...</div>
+          <div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>
+            Loading your fitness data...
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -363,12 +415,12 @@ const Calendar = () => {
 
       <div className="flex gap-6 justify-center">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-green-200" />
-          <span className="text-sm text-muted-foreground">Workout</span>
+          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'var(--accent-green)' }} />
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Workout</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-200" />
-          <span className="text-sm text-muted-foreground">Meals</span>
+          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'var(--accent-green)' }} />
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Meals</span>
         </div>
       </div>
 

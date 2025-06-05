@@ -28,10 +28,20 @@ const WorkoutTooltip = ({ children, muscleGroups, exerciseCount }: WorkoutToolti
         </TooltipTrigger>
         <TooltipContent 
           side="top" 
-          className="bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg text-sm max-w-xs"
+          className="px-3 py-2 rounded-lg shadow-lg text-sm max-w-xs transition-all duration-200"
+          style={{
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            borderColor: 'var(--border-color)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+          }}
         >
-          <div className="font-medium">{muscleGroupsText}</div>
-          <div className="text-gray-300">{exerciseCount} {exerciseText}</div>
+          <div className="font-medium" style={{ color: 'var(--text-primary)' }}>
+            {muscleGroupsText}
+          </div>
+          <div style={{ color: 'var(--text-secondary)' }}>
+            {exerciseCount} {exerciseText}
+          </div>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
