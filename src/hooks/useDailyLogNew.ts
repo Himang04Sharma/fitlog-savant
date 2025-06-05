@@ -155,11 +155,12 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
           };
         });
 
-        // Extract muscle groups from the custom field or derive from workouts
-        const muscleGroups = dailyLog.muscle_groups || {
-          muscleGroup1: '',
-          muscleGroup2: '',
-          muscleGroup3: ''
+        // Extract muscle groups from workouts data - get unique muscle groups
+        const uniqueMuscleGroups = [...new Set(workouts?.map(w => w.muscle_group).filter(Boolean) || [])];
+        const muscleGroups = {
+          muscleGroup1: uniqueMuscleGroups[0] || '',
+          muscleGroup2: uniqueMuscleGroups[1] || '',
+          muscleGroup3: uniqueMuscleGroups[2] || ''
         };
         
         setDailyLogData({
@@ -216,7 +217,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
       console.log('Current workouts data:', dailyLogData.workouts);
       console.log('Current muscle groups:', dailyLogData.muscleGroups);
       
-      // Prepare daily log data including muscle groups
+      // Prepare daily log data - only include fields that exist in the database
       const dailyLogPayload = {
         user_id: user.id,
         log_date: dateString,
@@ -231,8 +232,7 @@ export function useDailyLogNew({ date, user, onDataSaved }: UseDailyLogNewProps)
         macros_calories: dailyLogData.macros.calories ? parseInt(dailyLogData.macros.calories) : null,
         macros_protein: dailyLogData.macros.protein ? parseInt(dailyLogData.macros.protein) : null,
         macros_carbs: dailyLogData.macros.carbs ? parseInt(dailyLogData.macros.carbs) : null,
-        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null,
-        muscle_groups: dailyLogData.muscleGroups
+        macros_fat: dailyLogData.macros.fat ? parseInt(dailyLogData.macros.fat) : null
       };
       
       // Use upsert with proper conflict resolution
