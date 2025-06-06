@@ -1,11 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Calendar as CalendarIcon } from "lucide-react";
 import DailyLogDialog from './DailyLogDialog';
-import WorkoutTooltip from './dailyLog/components/WorkoutTooltip';
+import CalendarHeader from './calendar/CalendarHeader';
+import CalendarLegend from './calendar/CalendarLegend';
+import MonthlyCalendarCard from './calendar/MonthlyCalendarCard';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { calculateWorkoutStreak } from '../utils/calendarUtils';
 
 interface DateData {
   workout: boolean;
@@ -29,10 +30,6 @@ const Calendar = () => {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  // Get today's date for highlighting
-  const today = new Date();
-  const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
   // Check if user is authenticated
   useEffect(() => {
     const checkUser = async () => {
@@ -53,59 +50,6 @@ const Calendar = () => {
     
     checkUser();
   }, []);
-
-  // Calculate workout streak
-  const calculateWorkoutStreak = (workoutDates: string[]): number => {
-    if (workoutDates.length === 0) return 0;
-
-    // Sort dates in descending order (most recent first)
-    const sortedDates = workoutDates.sort().reverse();
-    const today = new Date();
-    let streak = 0;
-    let currentDate = new Date(today);
-
-    // Check if today or yesterday has a workout (to handle today not being complete yet)
-    const todayStr = currentDate.toISOString().split('T')[0];
-    const yesterdayStr = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
-    let startFromToday = sortedDates.includes(todayStr);
-    if (!startFromToday && sortedDates.includes(yesterdayStr)) {
-      currentDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-      startFromToday = true;
-    }
-
-    if (!startFromToday) return 0;
-
-    // Count consecutive days
-    for (const dateStr of sortedDates) {
-      const workoutDate = currentDate.toISOString().split('T')[0];
-      if (dateStr === workoutDate) {
-        streak++;
-        currentDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  };
-
-  // Calculate monthly statistics
-  const getMonthlyStats = (monthIndex: number) => {
-    const year = currentYear;
-    const daysInMonth = getDaysInMonth(monthIndex, year);
-    let workoutDays = 0;
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateString = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      if (dateHasData[dateString]?.workout) {
-        workoutDays++;
-      }
-    }
-
-    const restDays = daysInMonth - workoutDays;
-    return { workoutDays, restDays };
-  };
 
   // Load workout and diet logs from Supabase
   const fetchData = async () => {
@@ -219,34 +163,6 @@ const Calendar = () => {
     }
   }, [dialogOpen]);
 
-  const hasWorkout = (day: number, month: number) => {
-    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return dateHasData[dateString]?.workout || false;
-  };
-  
-  const hasDiet = (day: number, month: number) => {
-    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return dateHasData[dateString]?.diet || false;
-  };
-
-  const getWorkoutData = (day: number, month: number) => {
-    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return dateHasData[dateString] || { workout: false, diet: false, muscleGroups: [], exerciseCount: 0 };
-  };
-
-  const isToday = (day: number, month: number) => {
-    const dateString = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return dateString === todayString;
-  };
-
-  const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (month: number, year: number) => {
-    return new Date(year, month, 1).getDay();
-  };
-
   const handleDateClick = (day: number, month: number) => {
     const clickedDate = new Date(currentYear, month, day);
     setSelectedDate(clickedDate);
@@ -257,146 +173,9 @@ const Calendar = () => {
     setDialogOpen(open);
   };
 
-  const generateMonthCalendar = (monthIndex: number) => {
-    const daysInMonth = getDaysInMonth(monthIndex, currentYear);
-    const firstDay = getFirstDayOfMonth(monthIndex, currentYear);
-    const days = new Array(daysInMonth).fill(null).map((_, i) => i + 1);
-    const blanks = new Array(firstDay).fill(null);
-    const stats = getMonthlyStats(monthIndex);
-
-    return (
-      <Card 
-        className="p-4 animate-fadeIn transition-all duration-300 border-custom hover:shadow-lg" 
-        key={`${currentYear}-${monthIndex}`}
-        style={{ 
-          backgroundColor: 'var(--bg-card)',
-          borderColor: 'var(--border-color)',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <h3 className="font-heading text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-              {months[monthIndex]} {currentYear}
-            </h3>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              {stats.workoutDays} workouts • {stats.restDays} rest days
-            </p>
-          </div>
-        </div>
-        <div className="grid grid-cols-7 gap-2 mb-3">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-              {day}
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {blanks.map((_, i) => (
-            <div key={`blank-${i}`} className="h-8" />
-          ))}
-          {days.map((day) => {
-            const isWorkout = hasWorkout(day, monthIndex);
-            const isMeal = hasDiet(day, monthIndex);
-            const isTodayDate = isToday(day, monthIndex);
-            const workoutData = getWorkoutData(day, monthIndex);
-            
-            const dateButton = (
-              <Button
-                key={day}
-                variant="ghost"
-                onClick={() => handleDateClick(day, monthIndex)}
-                className={`h-8 p-0 text-sm relative transition-all duration-200 ${
-                  isWorkout && isMeal
-                    ? 'text-white'
-                    : isWorkout
-                    ? 'text-white'
-                    : isMeal
-                    ? 'text-white'
-                    : ''
-                } ${
-                  isTodayDate ? 'border-2 border-solid rounded-md' : ''
-                }`}
-                style={{
-                  backgroundColor: isWorkout && isMeal
-                    ? 'var(--accent-green)'
-                    : isWorkout
-                    ? 'var(--accent-green)'
-                    : isMeal
-                    ? 'var(--accent-green)'
-                    : 'transparent',
-                  borderColor: isTodayDate ? 'var(--today-highlight)' : 'transparent',
-                  color: (isWorkout || isMeal) ? '#FFFFFF' : 'var(--text-primary)'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isWorkout && !isMeal) {
-                    e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isWorkout && !isMeal) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
-                }}
-              >
-                {day}
-              </Button>
-            );
-
-            // Wrap workout dates with tooltip
-            if (isWorkout && workoutData.muscleGroups.length > 0) {
-              return (
-                <WorkoutTooltip
-                  key={day}
-                  muscleGroups={workoutData.muscleGroups}
-                  exerciseCount={workoutData.exerciseCount}
-                >
-                  {dateButton}
-                </WorkoutTooltip>
-              );
-            }
-
-            return dateButton;
-          })}
-        </div>
-      </Card>
-    );
-  };
-
   return (
     <div className="w-full space-y-6">
-      <div className="flex items-center justify-between">
-        {workoutStreak > 0 ? (
-          <div className="flex items-center gap-2 text-lg font-medium">
-            <span>🔥</span>
-            <span style={{ color: 'var(--text-primary)' }}>
-              Current Streak: <span style={{ color: 'var(--accent-green)' }}>{workoutStreak}</span> days
-            </span>
-          </div>
-        ) : (
-          <div></div>
-        )}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={fetchData}
-          className="border-custom transition-all duration-200"
-          style={{ 
-            borderColor: 'var(--border-color)',
-            color: 'var(--text-primary)',
-            backgroundColor: 'var(--bg-card)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--bg-card)';
-          }}
-        >
-          <CalendarIcon className="h-4 w-4 mr-2" />
-          Refresh Calendar
-        </Button>
-      </div>
+      <CalendarHeader workoutStreak={workoutStreak} onRefresh={fetchData} />
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
@@ -406,20 +185,20 @@ const Calendar = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {months.map((_, index) => generateMonthCalendar(index))}
+          {months.map((monthName, index) => (
+            <MonthlyCalendarCard
+              key={`${currentYear}-${index}`}
+              monthIndex={index}
+              year={currentYear}
+              monthName={monthName}
+              dateHasData={dateHasData}
+              onDateClick={handleDateClick}
+            />
+          ))}
         </div>
       )}
 
-      <div className="flex gap-6 justify-center">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'var(--accent-green)' }} />
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Workout</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'var(--accent-green)' }} />
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Meals</span>
-        </div>
-      </div>
+      <CalendarLegend />
 
       <DailyLogDialog
         date={selectedDate}
