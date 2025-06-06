@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Save, LogIn } from 'lucide-react';
@@ -6,6 +7,7 @@ import DailyGoalsSection from './DailyGoalsSection';
 import MealsTableSection from './MealsTableSection';
 import WorkoutTrackerSection from './WorkoutTrackerSection';
 import { useDailyLogNew } from '@/hooks/useDailyLogNew';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DailyLogContentProps {
   date: Date | null;
@@ -19,6 +21,7 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
   onDataSaved
 }) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const {
     dailyLogData,
     setDailyLogData,
@@ -65,11 +68,11 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Main Grid Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Column - Daily Goals (40%) */}
-        <div className="lg:col-span-2">
+    <div className={isMobile ? "space-y-4" : "max-w-7xl mx-auto p-6 space-y-6"}>
+      {/* Main Grid Container - Stack vertically on mobile, side-by-side on desktop */}
+      <div className={isMobile ? "space-y-4" : "grid grid-cols-1 lg:grid-cols-5 gap-6"}>
+        {/* Daily Goals Section */}
+        <div className={isMobile ? "" : "lg:col-span-2"}>
           <DailyGoalsSection
             goals={dailyLogData.goals}
             waterIntake={dailyLogData.waterIntake}
@@ -82,8 +85,8 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
           />
         </div>
         
-        {/* Right Column - Workout Tracker and Meals (60%) */}
-        <div className="lg:col-span-3 space-y-6">
+        {/* Workout Tracker and Meals Section */}
+        <div className={isMobile ? "space-y-4" : "lg:col-span-3 space-y-6"}>
           <WorkoutTrackerSection
             workouts={dailyLogData.workouts}
             muscleGroupsTrained={dailyLogData.muscleGroupsTrained}
@@ -102,13 +105,19 @@ const DailyLogContent: React.FC<DailyLogContentProps> = ({
         </div>
       </div>
 
-      {/* Save Button with updated styling */}
-      <div className="flex justify-center pt-4">
+      {/* Save Button - Sticky at bottom on mobile */}
+      <div className={
+        isMobile 
+          ? "sticky bottom-0 bg-white border-t border-gray-200 p-4 -m-4 mt-4"
+          : "flex justify-center pt-4"
+      }>
         <Button
           onClick={saveData}
           disabled={saving}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold px-8 py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+          className={`flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ${
+            isMobile ? "w-full px-6 py-3" : "px-8 py-3"
+          }`}
         >
           <Save className="w-5 h-5" />
           {saving ? 'Saving...' : 'Save Daily Log'}

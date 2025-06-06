@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WorkoutExerciseRowProps {
   workout: {
@@ -32,9 +32,90 @@ const WorkoutExerciseRow = ({
   onWorkoutChange,
   onRemoveRow
 }: WorkoutExerciseRowProps) => {
+  const isMobile = useIsMobile();
   const setsOptions = ['1', '2', '3', '4', '5'];
   const repsOptions = ['8-10', '10-12', '12-15'];
 
+  if (isMobile) {
+    return (
+      <div className="border border-gray-200 rounded-lg p-3 space-y-3 bg-white">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-gray-700">Exercise {index + 1}</span>
+          {canDelete && (
+            <Button
+              onClick={() => onRemoveRow(index)}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+        
+        <div className="space-y-3">
+          <Input
+            value={workout.exercise}
+            onChange={(e) => onWorkoutChange(index, 'exercise', e.target.value)}
+            placeholder="Exercise name"
+            className="h-10 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white"
+          />
+          
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">Sets</label>
+              <Select 
+                value={workout.sets} 
+                onValueChange={(value) => onWorkoutChange(index, 'sets', value)}
+              >
+                <SelectTrigger className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white text-sm">
+                  <SelectValue placeholder="Sets" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg bg-white z-50">
+                  {setsOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">Reps</label>
+              <Select 
+                value={workout.reps} 
+                onValueChange={(value) => onWorkoutChange(index, 'reps', value)}
+              >
+                <SelectTrigger className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white text-sm">
+                  <SelectValue placeholder="Reps" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg bg-white z-50">
+                  {repsOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">Weight</label>
+              <Input
+                value={workout.weight}
+                onChange={(e) => onWorkoutChange(index, 'weight', e.target.value)}
+                placeholder="lbs"
+                className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop layout (unchanged)
   return (
     <div className="grid gap-4 items-center" style={{ gridTemplateColumns: '50px 90px 1fr 60px 30px' }}>
       <Select 

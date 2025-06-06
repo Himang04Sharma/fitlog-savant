@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WorkoutMuscleGroupSelectorProps {
   muscleGroup1: string;
@@ -25,12 +26,13 @@ const WorkoutMuscleGroupSelector = ({
   onMuscleGroup2Change,
   onMuscleGroup3Change
 }: WorkoutMuscleGroupSelectorProps) => {
+  const isMobile = useIsMobile();
   const muscleGroupOptions = [
     'Back', 'Bicep', 'Tricep', 'Chest', 'Legs', 'Shoulder', 'Forearms', 'Cardio', 'Core'
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className={isMobile ? "space-y-3 mb-4" : "grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"}>
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700">Muscle Group 1</label>
         <Select value={muscleGroup1} onValueChange={onMuscleGroup1Change}>
