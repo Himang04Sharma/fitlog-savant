@@ -30,12 +30,18 @@ const DailyGoalsSection = ({
   onWeightChange
 }: DailyGoalsSectionProps) => {
   const [completedGoals, setCompletedGoals] = useState<boolean[]>(goals.map(() => false));
-  const [completedCount, setCompletedCount] = useState(0);
 
   // Reset completed goals when goals change from parent
   useEffect(() => {
-    setCompletedGoals(goals.map(() => false));
-    setCompletedCount(0);
+    setCompletedGoals(prev => {
+      // Preserve existing completion state and add false for new goals
+      const newCompleted = [...prev];
+      while (newCompleted.length < goals.length) {
+        newCompleted.push(false);
+      }
+      // Trim if we have more completion states than goals
+      return newCompleted.slice(0, goals.length);
+    });
   }, [goals.length]);
 
   const handleGoalChange = (index: number, value: string) => {
@@ -48,26 +54,6 @@ const DailyGoalsSection = ({
     const newCompleted = [...completedGoals];
     newCompleted[index] = !newCompleted[index];
     setCompletedGoals(newCompleted);
-
-    // If goal is being marked as completed, remove it from the goals list
-    if (newCompleted[index]) {
-      setCompletedCount(prev => prev + 1);
-      
-      // Remove the completed goal after a short delay for visual feedback
-      setTimeout(() => {
-        const newGoals = goals.filter((_, i) => i !== index);
-        const newCompletedState = newCompleted.filter((_, i) => i !== index);
-        
-        // Ensure we always have at least one empty goal
-        if (newGoals.length === 0 || newGoals.every(goal => goal.trim() === '')) {
-          newGoals.push('');
-          newCompletedState.push(false);
-        }
-        
-        onGoalsChange?.(newGoals);
-        setCompletedGoals(newCompletedState);
-      }, 500); // Give time for the animation to show
-    }
   };
 
   const addGoal = () => {
@@ -84,10 +70,12 @@ const DailyGoalsSection = ({
     }
   };
 
-  // Calculate completion percentage for remaining goals (not including completed ones that were removed)
+  // Calculate completion percentage for all goals with content
   const activeGoalsCount = goals.filter(goal => goal.trim() !== '').length;
-  const currentCompletedCount = completedGoals.filter(Boolean).length;
-  const completionRate = activeGoalsCount > 0 ? (currentCompletedCount / activeGoalsCount) * 100 : 0;
+  const completedCount = completedGoals.filter((completed, index) => 
+    completed && goals[index] && goals[index].trim() !== ''
+  ).length;
+  const completionRate = activeGoalsCount > 0 ? (completedCount / activeGoalsCount) * 100 : 0;
 
   return (
     <Card className="rounded-2xl shadow-2xl border-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:shadow-3xl group">
@@ -105,8 +93,7 @@ const DailyGoalsSection = ({
                 Today's Goals
               </span>
               <div className="text-sm font-normal text-gray-600 mt-1">
-                {completedCount > 0 && `${completedCount} completed, `}
-                {activeGoalsCount} active
+                {completedCount} of {activeGoalsCount} completed
               </div>
             </div>
           </CardTitle>
