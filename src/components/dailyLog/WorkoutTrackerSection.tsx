@@ -4,6 +4,7 @@ import { Dumbbell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MuscleGroupMultiSelect from './components/MuscleGroupMultiSelect';
 import MuscleGroupWorkoutSection from './components/MuscleGroupWorkoutSection';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Exercise {
   sets: string;
@@ -35,6 +36,7 @@ const WorkoutTrackerSection = ({
   onWorkoutsChange,
   onMuscleGroupsTrainedChange
 }: WorkoutTrackerSectionProps) => {
+  const isMobile = useIsMobile();
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>(muscleGroupsTrained);
   const [workoutData, setWorkoutData] = useState<WorkoutData>({});
 
@@ -124,23 +126,23 @@ const WorkoutTrackerSection = ({
 
   return (
     <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
-      <CardHeader className="pb-4 border-b border-gray-100">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-          <div className="p-2 bg-teal-100 rounded-lg">
-            <Dumbbell className="w-5 h-5 text-teal-600" />
+      <CardHeader className={isMobile ? "pb-3 border-b border-gray-100" : "pb-4 border-b border-gray-100"}>
+        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'} font-semibold text-gray-800`}>
+          <div className={`${isMobile ? 'p-1.5' : 'p-2'} bg-teal-100 rounded-lg`}>
+            <Dumbbell className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-teal-600`} />
           </div>
           Workout Tracker
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="p-6 space-y-6">
+      <CardContent className={isMobile ? "p-4 space-y-4" : "p-6 space-y-6"}>
         <MuscleGroupMultiSelect
           selectedMuscleGroups={selectedMuscleGroups}
           onMuscleGroupsChange={handleMuscleGroupsChange}
         />
 
         {selectedMuscleGroups.length > 0 && (
-          <div className="space-y-4">
+          <div className={isMobile ? "space-y-3" : "space-y-4"}>
             {selectedMuscleGroups.map((muscleGroup) => (
               <MuscleGroupWorkoutSection
                 key={muscleGroup}
@@ -154,8 +156,8 @@ const WorkoutTrackerSection = ({
 
         {selectedMuscleGroups.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            <Dumbbell className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p>Select muscle groups to start logging your workout</p>
+            <Dumbbell className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} mx-auto mb-2 text-gray-300`} />
+            <p className={isMobile ? 'text-sm' : ''}>Select muscle groups to start logging your workout</p>
           </div>
         )}
       </CardContent>
