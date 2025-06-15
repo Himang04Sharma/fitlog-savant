@@ -125,11 +125,11 @@ const WorkoutTrackerSection = ({
   };
 
   return (
-    <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
-      <CardHeader className={isMobile ? "pb-3 border-b border-gray-100" : "pb-4 border-b border-gray-100"}>
-        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'} font-semibold text-gray-800`}>
-          <div className={`${isMobile ? 'p-1.5' : 'p-2'} bg-teal-100 rounded-lg`}>
-            <Dumbbell className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-teal-600`} />
+    <Card className="rounded-lg shadow-sm border border-custom bg-card">
+      <CardHeader className={isMobile ? "pb-3 border-b border-custom" : "pb-4 border-b border-custom"}>
+        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'} font-semibold text-primary`}>
+          <div className={`${isMobile ? 'p-1.5' : 'p-2'} bg-teal-100 dark:bg-teal-900/30 rounded-lg`}>
+            <Dumbbell className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-teal-600 dark:text-teal-400`} />
           </div>
           Workout Tracker
         </CardTitle>
@@ -155,8 +155,8 @@ const WorkoutTrackerSection = ({
         )}
 
         {selectedMuscleGroups.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <Dumbbell className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} mx-auto mb-2 text-gray-300`} />
+          <div className="text-center py-8 text-secondary">
+            <Dumbbell className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} mx-auto mb-2 text-muted`} />
             <p className={isMobile ? 'text-sm' : ''}>Select muscle groups to start logging your workout</p>
           </div>
         )}

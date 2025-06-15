@@ -34,14 +34,14 @@ const WorkoutMuscleGroupSelector = ({
   return (
     <div className={isMobile ? "space-y-3 mb-4" : "grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"}>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Muscle Group 1</label>
+        <label className="text-sm font-medium text-primary">Muscle Group 1</label>
         <Select value={muscleGroup1} onValueChange={onMuscleGroup1Change}>
-          <SelectTrigger className="w-full h-10 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
+          <SelectTrigger className="w-full h-10 border-custom rounded-lg focus:ring-2 focus:ring-teal-300 bg-card text-primary">
             <SelectValue placeholder="Select muscle group" />
           </SelectTrigger>
-          <SelectContent className="rounded-lg bg-white z-50">
+          <SelectContent className="rounded-lg bg-card border-custom z-50">
             {muscleGroupOptions.map((option) => (
-              <SelectItem key={option} value={option}>
+              <SelectItem key={option} value={option} className="text-primary hover:bg-hover-bg">
                 {option}
               </SelectItem>
             ))}
@@ -50,14 +50,14 @@ const WorkoutMuscleGroupSelector = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Muscle Group 2</label>
+        <label className="text-sm font-medium text-primary">Muscle Group 2</label>
         <Select value={muscleGroup2} onValueChange={onMuscleGroup2Change}>
-          <SelectTrigger className="w-full h-10 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
+          <SelectTrigger className="w-full h-10 border-custom rounded-lg focus:ring-2 focus:ring-teal-300 bg-card text-primary">
             <SelectValue placeholder="Select muscle group" />
           </SelectTrigger>
-          <SelectContent className="rounded-lg bg-white z-50">
+          <SelectContent className="rounded-lg bg-card border-custom z-50">
             {muscleGroupOptions.map((option) => (
-              <SelectItem key={option} value={option}>
+              <SelectItem key={option} value={option} className="text-primary hover:bg-hover-bg">
                 {option}
               </SelectItem>
             ))}
@@ -66,14 +66,14 @@ const WorkoutMuscleGroupSelector = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Muscle Group 3</label>
+        <label className="text-sm font-medium text-primary">Muscle Group 3</label>
         <Select value={muscleGroup3} onValueChange={onMuscleGroup3Change}>
-          <SelectTrigger className="w-full h-10 border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-300 bg-white">
+          <SelectTrigger className="w-full h-10 border-custom rounded-lg focus:ring-2 focus:ring-teal-300 bg-card text-primary">
             <SelectValue placeholder="Select muscle group" />
           </SelectTrigger>
-          <SelectContent className="rounded-lg bg-white z-50">
+          <SelectContent className="rounded-lg bg-card border-custom z-50">
             {muscleGroupOptions.map((option) => (
-              <SelectItem key={option} value={option}>
+              <SelectItem key={option} value={option} className="text-primary hover:bg-hover-bg">
                 {option}
               </SelectItem>
             ))}
