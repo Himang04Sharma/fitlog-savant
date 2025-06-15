@@ -54,11 +54,11 @@ const MealsTableSection = ({
   };
 
   return (
-    <Card className="rounded-lg shadow-sm border border-gray-100 bg-white">
-      <CardHeader className="pb-4 border-b border-gray-100">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-          <div className="p-2 bg-orange-100 rounded-lg">
-            <Apple className="w-5 h-5 text-orange-600" />
+    <Card className="rounded-lg shadow-sm border border-custom bg-card">
+      <CardHeader className="pb-4 border-b border-custom">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-primary">
+          <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+            <Apple className="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
           Meals & Nutrition
         </CardTitle>
@@ -72,9 +72,9 @@ const MealsTableSection = ({
         />
 
         {/* Daily Nutrition Progress */}
-        <div className="space-y-4 pt-4 border-t border-gray-100">
+        <div className="space-y-4 pt-4 border-t border-custom">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-primary flex items-center gap-2">
               📊 Daily Nutrition Progress
             </h4>
             

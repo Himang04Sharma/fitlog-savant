@@ -20,21 +20,21 @@ const DailyLogDialog = ({ date, open, onOpenChange, user, onDataSaved }: DailyLo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={
         isMobile 
-          ? "w-[95vw] h-[95vh] max-w-none max-h-none p-4 overflow-y-auto rounded-lg" 
-          : "sm:max-w-[90vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+          ? "w-[95vw] h-[95vh] max-w-none max-h-none p-4 overflow-y-auto rounded-lg bg-primary border-custom" 
+          : "sm:max-w-[90vw] max-w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl bg-primary border-custom"
       }>
         <DialogHeader className={isMobile ? "text-center pb-2" : "text-center pb-4"}>
           <DialogTitle className={
             isMobile 
-              ? "text-xl font-heading font-bold text-gray-800"
-              : "text-3xl font-heading font-bold text-gray-800"
+              ? "text-xl font-heading font-bold text-primary"
+              : "text-3xl font-heading font-bold text-primary"
           }>
             Fitness Tracker - {date ? format(date, 'MMMM d, yyyy') : ''}
           </DialogTitle>
           <DialogDescription className={
             isMobile 
-              ? "text-sm text-gray-600"
-              : "text-lg text-gray-600"
+              ? "text-sm text-secondary"
+              : "text-lg text-secondary"
           }>
             Track your daily goals, meals, and workouts all in one place
           </DialogDescription>

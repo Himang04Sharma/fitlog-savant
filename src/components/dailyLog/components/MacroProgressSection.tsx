@@ -35,10 +35,10 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
   };
 
   const macroData = [
-    { key: 'calories', label: 'Calories', color: 'blue', unit: '' },
-    { key: 'protein', label: 'Protein (g)', color: 'green', unit: 'g' },
-    { key: 'carbs', label: 'Carbs (g)', color: 'orange', unit: 'g' },
-    { key: 'fat', label: 'Fat (g)', color: 'red', unit: 'g' }
+    { key: 'calories', label: 'Calories', color: 'from-blue-500 to-blue-600', unit: '' },
+    { key: 'protein', label: 'Protein (g)', color: 'from-green-500 to-green-600', unit: 'g' },
+    { key: 'carbs', label: 'Carbs (g)', color: 'from-orange-500 to-orange-600', unit: 'g' },
+    { key: 'fat', label: 'Fat (g)', color: 'from-red-500 to-red-600', unit: 'g' }
   ];
 
   return (
@@ -47,7 +47,7 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
         <div key={key} className="space-y-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">{label}</label>
+              <label className="text-sm font-medium text-primary">{label}</label>
               <Input
                 type="number"
                 min="0"
@@ -55,17 +55,17 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
                 value={macros[key as keyof typeof macros]}
                 onChange={(e) => handleMacroChange(key as 'calories' | 'protein' | 'carbs' | 'fat', e.target.value)}
                 placeholder="0"
-                className="w-20 h-7 text-xs border-gray-200 rounded bg-white"
+                className="w-20 h-7 text-xs border-custom rounded bg-card"
               />
             </div>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-secondary">
               {macros[key as keyof typeof macros] || 0} / {macroTargets[key as keyof typeof macroTargets]}{unit}
             </span>
           </div>
           <div className="relative">
-            <Progress value={calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])} className="h-2" />
+            <Progress value={calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])} className="h-2 bg-muted" />
             <div 
-              className={`absolute top-0 left-0 h-2 rounded-full bg-${color}-500 transition-all`}
+              className={`absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r ${color} transition-all`}
               style={{ width: `${calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])}%` }}
             />
           </div>
