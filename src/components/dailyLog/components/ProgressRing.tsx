@@ -20,7 +20,7 @@ const ProgressRing = ({ percentage, size = 16 }: ProgressRingProps) => {
           stroke="currentColor"
           strokeWidth="4"
           fill="none"
-          className="text-gray-200"
+          className="text-muted"
         />
         <circle
           cx="32"
@@ -31,12 +31,12 @@ const ProgressRing = ({ percentage, size = 16 }: ProgressRingProps) => {
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - percentage / 100)}
-          className="text-emerald-500 transition-all duration-1000 ease-out"
+          className="accent-green transition-all duration-1000 ease-out"
           strokeLinecap="round"
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-sm font-bold text-gray-700">{Math.round(percentage)}%</span>
+        <span className="text-sm font-bold text-primary">{Math.round(percentage)}%</span>
       </div>
     </div>
   );

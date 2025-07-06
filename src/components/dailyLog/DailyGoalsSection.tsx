@@ -78,21 +78,16 @@ const DailyGoalsSection = ({
   const completionRate = activeGoalsCount > 0 ? (completedCount / activeGoalsCount) * 100 : 0;
 
   return (
-    <Card className="rounded-2xl shadow-2xl border-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:shadow-3xl group">
-      {/* Glassmorphism overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
-      
-      <CardHeader className="pb-6 relative z-10">
+    <Card className="rounded-lg shadow-sm border-custom bg-card transition-all duration-300 hover:shadow-md">
+      <CardHeader className="pb-6 border-b border-custom">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
-              <Target className="w-7 h-7 text-white" />
+          <CardTitle className="flex items-center gap-3 text-xl font-semibold text-primary">
+            <div className="p-2 bg-accent-green rounded-lg shadow-sm">
+              <Target className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Today's Goals
-              </span>
-              <div className="text-sm font-normal text-gray-600 mt-1">
+              <span className="text-primary">Today's Goals</span>
+              <div className="text-sm font-normal text-secondary mt-1">
                 {completedCount} of {activeGoalsCount} completed
               </div>
             </div>
@@ -102,7 +97,7 @@ const DailyGoalsSection = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-8 relative z-10 p-8">
+      <CardContent className="space-y-8 p-6">
         {/* Goals Section */}
         <GoalsList
           goals={goals}
@@ -114,7 +109,7 @@ const DailyGoalsSection = ({
         />
 
         {/* Metrics Section */}
-        <div className="grid grid-cols-1 gap-6 pt-6 border-t border-emerald-200/50">
+        <div className="grid grid-cols-1 gap-6 pt-6 border-t border-custom">
           <WaterIntakeTracker
             waterIntake={waterIntake}
             onWaterIntakeChange={onWaterIntakeChange}

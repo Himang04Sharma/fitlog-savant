@@ -24,22 +24,22 @@ const WaterIntakeTracker = ({ waterIntake, onWaterIntakeChange }: WaterIntakeTra
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg">
+          <div className="p-2 bg-blue-500 rounded-lg shadow-sm">
             <Droplet className="w-5 h-5 text-white" />
           </div>
-          <label className="text-lg font-semibold text-gray-800">Water Intake</label>
+          <label className="text-lg font-semibold text-primary">Water Intake</label>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-blue-600">{currentWaterCount}/8</div>
-          <div className="text-sm text-gray-600">glasses</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{currentWaterCount}/8</div>
+          <div className="text-sm text-secondary">glasses</div>
         </div>
       </div>
       
       {/* Water Progress Container */}
-      <div className="relative bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl p-6 overflow-hidden">
-        {/* Animated Wave Background */}
+      <div className="relative bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-custom overflow-hidden">
+        {/* Animated Progress Background */}
         <div 
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-400 to-cyan-500 transition-all duration-1000 ease-out rounded-2xl animate-pulse"
+          className="absolute bottom-0 left-0 right-0 bg-blue-400 dark:bg-blue-500 transition-all duration-1000 ease-out rounded-lg opacity-20"
           style={{ height: `${waterPercentage}%` }}
         />
         
@@ -56,8 +56,8 @@ const WaterIntakeTracker = ({ waterIntake, onWaterIntakeChange }: WaterIntakeTra
               <Droplet 
                 className={`w-7 h-7 transition-colors duration-300 ${
                   index < currentWaterCount 
-                    ? 'text-blue-500 fill-blue-500 drop-shadow-lg' 
-                    : 'text-white fill-white hover:text-blue-400'
+                    ? 'text-blue-500 fill-blue-500 drop-shadow-sm' 
+                    : 'text-secondary hover:text-blue-400'
                 }`}
               />
             </button>
@@ -66,8 +66,8 @@ const WaterIntakeTracker = ({ waterIntake, onWaterIntakeChange }: WaterIntakeTra
       </div>
       
       <div className="text-center">
-        <div className="text-sm font-medium text-gray-600">
-          <span className={`${waterPercentage >= 100 ? 'text-green-600 font-bold' : 'text-blue-600'}`}>
+        <div className="text-sm font-medium text-secondary">
+          <span className={`${waterPercentage >= 100 ? 'text-green-600 dark:text-green-400 font-bold' : 'text-blue-600 dark:text-blue-400'}`}>
             {Math.round(waterPercentage)}% of daily target
           </span>
         </div>
