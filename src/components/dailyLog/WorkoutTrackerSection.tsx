@@ -125,7 +125,7 @@ const WorkoutTrackerSection = ({
   };
 
   return (
-    <Card className="rounded-lg shadow-sm border border-custom bg-card">
+    <Card className="rounded-lg shadow-sm border border-custom bg-card transition-all duration-200">
       <CardHeader className={isMobile ? "pb-3 border-b border-custom" : "pb-4 border-b border-custom"}>
         <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'} font-semibold text-primary`}>
           <div className={`${isMobile ? 'p-1.5' : 'p-2'} bg-teal-100 dark:bg-teal-900/30 rounded-lg`}>

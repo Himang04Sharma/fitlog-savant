@@ -31,14 +31,14 @@ const WeightTracker = ({ weight, onWeightChange }: WeightTrackerProps) => {
         </div>
       </div>
       
-      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-custom">
+      <div className="bg-card border border-custom rounded-lg p-4 transition-all duration-200">
         <Input
           type="number"
           step="0.1"
           value={weight}
           onChange={(e) => onWeightChange(e.target.value)}
           placeholder="Enter your weight in kg"
-          className="border-0 bg-card rounded-lg focus:ring-2 focus:ring-amber-400 transition-all h-12 text-center text-lg font-semibold text-primary placeholder:text-secondary"
+          className="border-0 bg-secondary/20 rounded-lg focus:ring-2 focus:ring-amber-400 transition-all h-12 text-center text-lg font-semibold text-primary placeholder:text-secondary"
         />
         <div className="mt-3 text-center text-sm text-secondary">
           Track your progress over time

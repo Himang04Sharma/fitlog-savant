@@ -36,10 +36,10 @@ const WaterIntakeTracker = ({ waterIntake, onWaterIntakeChange }: WaterIntakeTra
       </div>
       
       {/* Water Progress Container */}
-      <div className="relative bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-custom overflow-hidden">
+      <div className="relative bg-card border border-custom rounded-lg p-6 overflow-hidden transition-all duration-200">
         {/* Animated Progress Background */}
         <div 
-          className="absolute bottom-0 left-0 right-0 bg-blue-400 dark:bg-blue-500 transition-all duration-1000 ease-out rounded-lg opacity-20"
+          className="absolute bottom-0 left-0 right-0 bg-blue-400/20 dark:bg-blue-500/20 transition-all duration-1000 ease-out rounded-lg"
           style={{ height: `${waterPercentage}%` }}
         />
         
@@ -49,7 +49,7 @@ const WaterIntakeTracker = ({ waterIntake, onWaterIntakeChange }: WaterIntakeTra
             <button
               key={index}
               onClick={() => handleDropletClick(index)}
-              className={`transition-all duration-300 hover:scale-125 ${
+              className={`transition-all duration-300 hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded ${
                 animatingWater === index ? 'animate-bounce' : ''
               }`}
             >

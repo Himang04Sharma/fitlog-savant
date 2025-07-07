@@ -26,13 +26,13 @@ const StepsTracker = ({ steps, onStepsChange }: StepsTrackerProps) => {
         </div>
       </div>
       
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-custom">
+      <div className="bg-card border border-custom rounded-lg p-4 transition-all duration-200">
         <Input
           type="number"
           value={steps}
           onChange={(e) => onStepsChange(e.target.value)}
           placeholder="Enter today's step count"
-          className="border-0 bg-card rounded-lg focus:ring-2 focus:ring-purple-400 transition-all h-12 text-center text-lg font-semibold text-primary placeholder:text-secondary"
+          className="border-0 bg-secondary/20 rounded-lg focus:ring-2 focus:ring-purple-400 transition-all h-12 text-center text-lg font-semibold text-primary placeholder:text-secondary"
         />
         <div className="mt-3 text-center">
           <div className="text-sm text-secondary">

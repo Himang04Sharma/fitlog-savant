@@ -29,7 +29,7 @@ const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {mealTypes.map(({ key, label, icon }) => (
         <div key={key} className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-primary">
             <span className="text-base">{icon}</span>
             {label}
           </label>
@@ -37,7 +37,7 @@ const MealsFormSection = ({ meals, onMealChange }: MealsFormSectionProps) => {
             value={meals[key as keyof typeof meals]}
             onChange={(e) => handleMealChange(key as 'breakfast' | 'lunch' | 'dinner' | 'snacks', e.target.value)}
             placeholder={`What did you have for ${label.toLowerCase()}?`}
-            className="h-9 border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-300 bg-white transition-all"
+            className="h-9 bg-card border-custom rounded-lg focus:ring-2 focus:ring-accent-green text-primary placeholder:text-secondary transition-all duration-200"
           />
         </div>
       ))}

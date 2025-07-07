@@ -35,15 +35,39 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
   };
 
   const macroData = [
-    { key: 'calories', label: 'Calories', color: 'from-blue-500 to-blue-600', unit: '' },
-    { key: 'protein', label: 'Protein (g)', color: 'from-green-500 to-green-600', unit: 'g' },
-    { key: 'carbs', label: 'Carbs (g)', color: 'from-orange-500 to-orange-600', unit: 'g' },
-    { key: 'fat', label: 'Fat (g)', color: 'from-red-500 to-red-600', unit: 'g' }
+    { 
+      key: 'calories', 
+      label: 'Calories', 
+      color: 'from-blue-500 to-blue-600', 
+      unit: '',
+      bgColor: 'bg-blue-500'
+    },
+    { 
+      key: 'protein', 
+      label: 'Protein (g)', 
+      color: 'from-green-500 to-green-600', 
+      unit: 'g',
+      bgColor: 'bg-green-500'
+    },
+    { 
+      key: 'carbs', 
+      label: 'Carbs (g)', 
+      color: 'from-orange-500 to-orange-600', 
+      unit: 'g',
+      bgColor: 'bg-orange-500'
+    },
+    { 
+      key: 'fat', 
+      label: 'Fat (g)', 
+      color: 'from-red-500 to-red-600', 
+      unit: 'g',
+      bgColor: 'bg-red-500'
+    }
   ];
 
   return (
     <div className="space-y-4">
-      {macroData.map(({ key, label, color, unit }) => (
+      {macroData.map(({ key, label, color, unit, bgColor }) => (
         <div key={key} className="space-y-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
@@ -55,7 +79,7 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
                 value={macros[key as keyof typeof macros]}
                 onChange={(e) => handleMacroChange(key as 'calories' | 'protein' | 'carbs' | 'fat', e.target.value)}
                 placeholder="0"
-                className="w-20 h-7 text-xs border-custom rounded bg-card"
+                className="w-20 h-7 text-xs bg-card border-custom rounded text-primary placeholder:text-secondary focus:ring-2 focus:ring-accent-green transition-all duration-200"
               />
             </div>
             <span className="text-sm text-secondary">
@@ -63,11 +87,12 @@ const MacroProgressSection = ({ macros, macroTargets, onMacroChange }: MacroProg
             </span>
           </div>
           <div className="relative">
-            <Progress value={calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])} className="h-2 bg-muted" />
-            <div 
-              className={`absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r ${color} transition-all`}
-              style={{ width: `${calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])}%` }}
-            />
+            <div className="h-2 bg-secondary/30 rounded-full overflow-hidden">
+              <div 
+                className={`h-full ${bgColor} rounded-full transition-all duration-500 ease-out`}
+                style={{ width: `${calculateProgress(macros[key as keyof typeof macros], macroTargets[key as keyof typeof macroTargets])}%` }}
+              />
+            </div>
           </div>
         </div>
       ))}
