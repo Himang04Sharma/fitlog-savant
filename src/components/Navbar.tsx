@@ -15,7 +15,9 @@ const Navbar = () => {
         </Link>
         
         <div className="ml-auto flex items-center space-x-4">
-          <ThemeToggle />
+          <div className="scale-75">
+            <ThemeToggle />
+          </div>
           <AuthButton />
         </div>
       </div>
