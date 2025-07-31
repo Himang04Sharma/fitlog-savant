@@ -14,6 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      assigned_workouts: {
+        Row: {
+          assigned_date: string
+          client_id: string
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          trainer_id: string
+          updated_at: string | null
+          workout_template_id: string | null
+        }
+        Insert: {
+          assigned_date: string
+          client_id: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          trainer_id: string
+          updated_at?: string | null
+          workout_template_id?: string | null
+        }
+        Update: {
+          assigned_date?: string
+          client_id?: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          trainer_id?: string
+          updated_at?: string | null
+          workout_template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assigned_workouts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assigned_workouts_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assigned_workouts_workout_template_id_fkey"
+            columns: ["workout_template_id"]
+            isOneToOne: false
+            referencedRelation: "workout_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_logs: {
         Row: {
           breakfast: string | null
@@ -112,23 +170,100 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
+          certification: string | null
           created_at: string | null
+          first_name: string | null
           id: string
+          last_name: string | null
+          phone: string | null
+          specialization: string | null
+          trainer_id: string | null
+          updated_at: string | null
+          user_type: Database["public"]["Enums"]["user_type"] | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
+          certification?: string | null
           created_at?: string | null
+          first_name?: string | null
           id: string
+          last_name?: string | null
+          phone?: string | null
+          specialization?: string | null
+          trainer_id?: string | null
+          updated_at?: string | null
+          user_type?: Database["public"]["Enums"]["user_type"] | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
+          certification?: string | null
           created_at?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
+          phone?: string | null
+          specialization?: string | null
+          trainer_id?: string | null
+          updated_at?: string | null
+          user_type?: Database["public"]["Enums"]["user_type"] | null
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trainer_clients: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          id: string
+          status: string | null
+          trainer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          trainer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          trainer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_clients_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trainer_clients_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workout_logs: {
         Row: {
@@ -156,6 +291,56 @@ export type Database = {
           {
             foreignKeyName: "workout_logs_user_id_fkey1"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workout_templates: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty_level:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes: number | null
+          exercises: Json
+          id: string
+          name: string
+          trainer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes?: number | null
+          exercises: Json
+          id?: string
+          name: string
+          trainer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes?: number | null
+          exercises?: Json
+          id?: string
+          name?: string
+          trainer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_templates_trainer_id_fkey"
+            columns: ["trainer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -211,7 +396,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      difficulty_level: "beginner" | "intermediate" | "advanced"
+      user_type: "normal_user" | "trainer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -338,6 +524,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      difficulty_level: ["beginner", "intermediate", "advanced"],
+      user_type: ["normal_user", "trainer"],
+    },
   },
 } as const
