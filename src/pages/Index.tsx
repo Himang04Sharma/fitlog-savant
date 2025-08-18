@@ -2,6 +2,7 @@
 import React from 'react';
 import Calendar from '../components/Calendar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const Index = () => {
   return (

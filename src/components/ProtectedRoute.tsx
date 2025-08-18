@@ -1,43 +1,36 @@
-
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  requireAuth?: boolean;
+  requiredUserType?: 'normal_user' | 'trainer';
+  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  requireAuth = true, 
+  requiredUserType,
+  redirectTo = '/auth'
+}) => {
+  const { user, profile, loading } = useAuth();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user || null);
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Wait a moment for profile to load after user is available
+    if (!loading && user) {
+      const timer = setTimeout(() => {
+        setIsChecking(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    } else if (!loading) {
+      setIsChecking(false);
+    }
+  }, [loading, user, profile]);
 
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  if (loading) {
+  if (loading || isChecking) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -45,8 +38,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
+  // Check authentication requirement
+  if (requireAuth && !user) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  // Check user type requirement
+  if (requiredUserType && profile?.user_type !== requiredUserType) {
+    // Redirect based on actual user type
+    if (profile?.user_type === 'trainer') {
+      return <Navigate to="/trainer-dashboard" replace />;
+    } else {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
