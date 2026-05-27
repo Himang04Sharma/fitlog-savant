@@ -393,7 +393,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_trainer_client_link: {
+        Args: { _a: string; _b: string }
+        Returns: boolean
+      }
     }
     Enums: {
       difficulty_level: "beginner" | "intermediate" | "advanced"
