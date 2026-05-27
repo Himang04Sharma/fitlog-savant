@@ -397,6 +397,7 @@ export type Database = {
         Args: { _a: string; _b: string }
         Returns: boolean
       }
+      is_trainer: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       difficulty_level: "beginner" | "intermediate" | "advanced"
