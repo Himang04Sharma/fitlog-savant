@@ -16,7 +16,19 @@ interface DateData {
 }
 
 const Calendar = () => {
-  const [currentYear] = useState(2025);
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+
+  // Keep year in sync with the real date (updates at midnight / on focus)
+  useEffect(() => {
+    const sync = () => setCurrentYear(new Date().getFullYear());
+    sync();
+    window.addEventListener('focus', sync);
+    const interval = setInterval(sync, 60 * 1000);
+    return () => {
+      window.removeEventListener('focus', sync);
+      clearInterval(interval);
+    };
+  }, []);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dateHasData, setDateHasData] = useState<Record<string, DateData>>({});
